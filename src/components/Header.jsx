@@ -36,7 +36,7 @@ const Header = () => {
             !isOpen
               ? " opacity-100  translate-y-0"
               : "opacity-0 -translate-y-5 pointer-events-none md:opacity-100 md:translate-y-0 md:pointer-events-auto"
-          }  md:relative md:bg-transparent  bg-sky-950 h-screen text-white bg-transparent gap-4`}
+          }  md:relative md:bg-transparent  bg-slate-800 h-screen text-white  gap-4`}
         >
           <FaTimes
             className=" md:hidden w-[60px] absolute top-7   right-0  flex justify-end items-end cursor-pointer "

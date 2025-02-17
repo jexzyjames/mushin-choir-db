@@ -19,6 +19,7 @@ import Login from "./pages/Login";
 import Logout from "./pages/Logout";
 import { useSelector, useDispatch } from "react-redux";
 import { listenForAuthChanges } from "../src/redux/slices/authSlice";
+import AdminPanel from "./pages/Admin";
 
 const App = () => {
   const tools = ["DASHBOARD", "LESSONS", "ASSIGNMENTS", "PROFILE"];
@@ -41,13 +42,13 @@ const App = () => {
       title: "PROFILE",
     },
   ];
-  const ProtectedRoute = ({ user, children }) => {
-    return user ? children : <Navigate to="/login" replace />;
-  };
+  // const ProtectedRoute = ({ user, children }) => {
+  //   return user ? children : <Navigate to="/login" replace />;
+  // };
 
   useEffect(()=>{
     dispatch(listenForAuthChanges())
-  },[user])
+  },[])
 
   return (
     <div>
@@ -61,6 +62,8 @@ const App = () => {
           </Route>
           <Route path="/reg" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/admin" element={<AdminPanel />}/>
+
 
           {user ? (
             <Route path="/dash" element={<Dashboard />}>

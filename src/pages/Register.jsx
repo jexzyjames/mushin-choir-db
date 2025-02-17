@@ -187,6 +187,9 @@ const Register = () => {
                 <option className=" bg-white" value="">
                   -- SELECT GRADE --
                 </option>
+                <option className=" bg-white" value="PRELIM">
+                  PRELIM
+                </option>
                 <option className=" bg-white" value="GRADE 1">
                   GRADE 1
                 </option>
