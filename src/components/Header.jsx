@@ -58,7 +58,7 @@ const Header = () => {
           </li>
           <div className="flex md:hidden pt-3">
             {user?.name ? (
-              <div className="flex rounded-md justify-center items-center bg-purple-500 ">
+              <div className="flex rounded-md justify-center relative items-center bg-purple-500 ">
 
               <Link className="px-4 py-1  text-white" to="/dash">
                 {" "}
