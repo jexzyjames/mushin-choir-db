@@ -13,12 +13,12 @@ const Logo = (
   </span>
 );
 const Header = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
 
   const user = useSelector((state) => state.auth.user);
 
   return (
-    <div className=" m-0   px-[2%]  md:px-[10%] py-4 md:flex w-full relative justify-between  text-white  ">
+    <div className=" m-0     px-[2%]  md:px-[10%] py-4 md:flex w-full relative justify-between  text-white  ">
       {Logo}
       <div className="absolute md:hidden top-7 right-0">
         <FaAlignLeft
@@ -35,7 +35,7 @@ const Header = () => {
             !isOpen
               ? " opacity-100  translate-y-0"
               : "opacity-0 -translate-y-5 pointer-events-none md:opacity-100 md:translate-y-0 md:pointer-events-auto"
-          }  md:relative md:bg-transparent     bg-black h-screen text-white bg-transparent gap-4`}
+          }  md:relative md:bg-transparent     bg-blue-800 h-screen text-white bg-transparent gap-4`}
         >
           <FaTimes
             className=" md:hidden w-[60px] absolute top-7   right-0  flex justify-end items-end cursor-pointer "
@@ -58,10 +58,14 @@ const Header = () => {
           </li>
           <div className="flex md:hidden pt-3">
             {user?.name ? (
+              <div className="flex bg-slate-500 w-full">
+
               <Link className="px-4 py-1  text-white" to="/dash">
                 {" "}
-                <FaUser /> {user.name}
+                <FaUser /> 
               </Link>
+                {user.name}
+              </div>
             ) : (
               <Link
                 to="/reg"

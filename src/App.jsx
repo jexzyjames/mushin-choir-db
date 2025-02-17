@@ -47,7 +47,7 @@ const App = () => {
 
   useEffect(()=>{
     dispatch(listenForAuthChanges())
-  },[user, dispatch])
+  },[])
 
   return (
     <div>

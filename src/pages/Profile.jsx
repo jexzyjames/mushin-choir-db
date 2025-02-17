@@ -50,7 +50,7 @@ const Profile = () => {
     console.log(id)
     
   try{
-    await updateDoc(doc(db, "users", id), {val});
+    await updateDoc(doc(db, "users", id), val);
     setLoading(false)
     toast.success('User details updated successfully');
     console.log(val)
