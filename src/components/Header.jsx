@@ -18,9 +18,9 @@ const Header = () => {
   const user = useSelector((state) => state.auth.user);
 
   return (
-    <div className=" m-auto  px-[2%]  md:px-[10%] py-4 md:flex w-full relative justify-between  text-white  ">
+    <div className=" m-0 md:h-9 px-[2%]  md:px-[10%] py-4 md:flex w-full relative justify-between  text-white  ">
       {Logo}
-      <div className="absolute md:hidden top-7 right-0">
+      <div className=" absolute md:hidden md:relative top-7 md:right-0 md:top-0 right-0">
         <FaAlignLeft
           onClick={() => {
             setIsOpen(!isOpen);
@@ -32,14 +32,14 @@ const Header = () => {
       <nav className="md:flex flex flex-col md:justify-center">
         <ul
         onClick={()=>setIsOpen(true)}
-          className={`md:flex opacity-0 justify-center items-center md:items-start flex flex-col md:flex-row absolute top-0 right-2 w-[150px] p-5 md:p-2 cursor-pointer ${
+          className={`md:flex md:relative  opacity-0 justify-center items-center md:items-start flex flex-col md:flex-row absolute top-0 right-2 w-[150px] p-5 md:p-2 cursor-pointer ${
             !isOpen
               ? " opacity-100  translate-y-0"
               : "opacity-0 -translate-y-5 pointer-events-none md:opacity-100 md:translate-y-0 md:pointer-events-auto"
           }  md:relative md:bg-transparent  bg-slate-800 h-screen text-white  gap-4`}
         >
           <FaTimes
-            className=" md:hidden w-[60px] absolute top-7   right-0  flex justify-end items-end cursor-pointer "
+            className=" md:hidden w-[60px] absolute top-7  md:top-0  right-0  flex justify-end items-end cursor-pointer "
             onClick={() => setIsOpen(!isOpen)}
           />
           <li className="mt-5 md:mt-0">
@@ -59,7 +59,7 @@ const Header = () => {
           </li>
           <div className="flex md:hidden pt-3">
             {user?.name ? (
-              <div className="flex rounded-md justify-center  items-center bg-purple-500 ">
+              <div className="flex rounded-md justify-center md:bg-purple-600  items-center bg-purple-500 ">
 
               <Link className="px-4 py-1  text-white" to="/dash">
                 {" "}
@@ -81,10 +81,13 @@ const Header = () => {
       </nav>
       <div className="hidden md:block">
         {user?.name ? (
-          <Link className="px-4 py-1  text-white" to="/dash">
+          <div className="flex">
+
+          <Link className="px-4 py-1 flex gap-1 items-center justify-center bg-purple-500 rounded-md   text-white" to="/dash">
             {" "}
             <FaUser /> {user.name}
           </Link>
+          </div>
         ) : (
           <Link
             to="/reg"

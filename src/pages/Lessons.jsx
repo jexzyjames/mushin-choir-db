@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { FaList } from "react-icons/fa6";
 import btriad from "../assets/basic-triads.svg";
 import triad from "../assets/triads-the-4-types.svg";
@@ -13,11 +13,22 @@ const Lessons = ({ title }) => {
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
   const grade = user?.grade
-
+  const[loading, setLoading] = useState(false);
+const getGradeLesson = async ()=>{
+setLoading(false)
+  dispatch(getgradesLessons(user?.grade));
+}
   useEffect(() => {
-    dispatch(getgradesLessons(user?.grade));
-  }, [dispatch]);
+    setLoading(true)
+    getGradeLesson()
+  }, [dispatch, loading]);
+
   return (
+
+    
+      <>
+      {loading ?  <div className="text-center text-xl">loading ...</div>
+      : 
     <div className=" h-full">
       <div className=" ">
         <div className="flex bg-white mb-1 shadow-lg rounded-xl p-2  gap-1 items-center">
@@ -94,7 +105,10 @@ const Lessons = ({ title }) => {
 
         
       </div>
-    </div>
+      </div>
+      }
+      </>
+  
   );
 };
 

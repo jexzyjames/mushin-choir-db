@@ -35,15 +35,15 @@ const Hero = ({head, sethead}) => {
     <>
         <div className="bg-slate -10 md:w-full w-[100%]  h-screen     flex flex- m-0  md:flex  md:flex-row ">
         {/* NAVIGATIONS SECTION */}
-        <div className="w-[15%]   rounded-md   justify-start flex  items-end justify-self-end p-2 md:w-[20%]">
-          <div className="flex h-full justify-start items-start   flex-col  justify-self-end gap-2 md:gap-4 md:items-start w-full  ">
+        <div className="w-[10%]  rounded-md   justify-start flex  items-end justify-self-end p-2 md:w-[20%]">
+          <div className="flex  h-full justify-start items-start   flex-col  justify-self-end gap-2 md:gap-4 md:items-start w-full  ">
             <NavLink
-              onClick={() => sethead("DASHBOARDSs")}
+              onClick={() => sethead("DASHBOARD")}
               to=''
               className={`flex gap-3 items-center  font-extrabold p-2`}
             >
               <p>
-                <FaDashcube />
+                <FaDashcube className=' ' />
               </p>
               <p className=" hidden focus:visible  hover:w-full md:block">
                 Dashboard

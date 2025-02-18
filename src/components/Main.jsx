@@ -5,12 +5,13 @@ import {Outlet} from 'react-router-dom'
 
 const Main = () => {
   return (
-    <div className=' h-screen  bg-hero-100  m-0' >
+    <div className=' bg-black' >
       <Header />
-      <div className="    m-0 justify-center  grid place-items-center   ">
+      <div className='h-screen'>
+
         <Outlet/>
-        {/* <h1 className="text-white text-3xl  "> YOUTH CHOIR MUSHIN</h1> */}
       </div>
+        {/* <h1 className="text-white text-3xl  "> YOUTH CHOIR MUSHIN</h1> */}
     </div>
   );
 };
