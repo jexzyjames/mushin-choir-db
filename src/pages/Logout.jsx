@@ -14,7 +14,7 @@ const Logout = () => {
     <div className='relative bg-slate-900  opacity-90  w-full  text-black' >
 
     {modal ? 
-     <div className='bg-gray-900 right-0 left-0  text-white flex justify-center flex-col  absolute text-center p-3  rounded-xl shadow-lg h-screen'>
+     <div className='bg-blue-500 right-0 left-0  text-white flex justify-center flex-col  absolute text-center p-3  rounded-xl shadow-lg h-screen'>
      <h1 className='text-xl mb-2 uppercase ' >Are you sure you want to log out</h1>
      <div className='w-full flex gap-4 justify-center mt-3 items-center '>
          <button onClick={()=> {

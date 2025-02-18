@@ -10,7 +10,7 @@ function AdminPanel() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     if (!grade) {
       alert('Please select a grade');
@@ -18,11 +18,23 @@ function AdminPanel() {
       return;
     }
     if (contentType === 'assignment') {
-      dispatch(postGradeAssignment({ grade, assignmentData: { title, content } }));
-      toast.success('Assignment posted successfully');
+
+      try {
+        
+        await dispatch(postGradeAssignment({ grade, assignmentData: { title, content } }));
+       toast.success('Assignment posted successfully');
+      } catch (error) {
+        toast.error(error.message);
+        
+      }
     } else if (contentType === 'lesson') {
-      dispatch(postGradeLesson({ grade, lessonData: { title, content } }));
-      toast.success('Lesson posted successfully');
+      try {
+        
+       await dispatch(postGradeLesson({ grade, lessonData: { title, content } }));
+        toast.success('Lesson posted successfully');
+      } catch (error) {
+        toast.error(error.message);
+      }
     }
     // Clear fields after submission
     setTitle('');

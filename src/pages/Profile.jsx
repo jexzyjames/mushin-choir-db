@@ -7,8 +7,7 @@ import { update } from "../redux/slices/authSlice";
 import { useSelector, useDispatch } from "react-redux";
 import {updateDoc, doc} from 'firebase/firestore'
 import { db } from "../config/firebaseconfig";
-import { FaEye,FaEyeSlash } from "react-icons/fa6";
-import {  updateUserDetails } from "../redux/slices/authSlice";
+import {FaList } from "react-icons/fa6";
 const Profile = () => {
   const dispatch = useDispatch();
   const {id} = useParams();
@@ -67,11 +66,15 @@ setLoading(false)
   }
  
 return (
-    <div className=''>
+    <div className='w-full'>
+              <div className="flex bg-white mb-1 shadow-lg rounded-xl p-2  gap-1 items-center">
+                <FaList />
+                <h2 className="font-mono font-bold ">PROFILE {user.grade}</h2>
+              </div>
        
         <form
           onSubmit={handleSubmit}
-          className="md:h-screen p-2 md:p-8   flex flex-col-reverse  gap-6 md:gap-2 m-auto md:grid  md:place-items-center md:grid-cols-1  "
+          className=" p-2  w-full  flex flex-col-reverse  gap-6  m-auto md:grid    "
         >
          
 
