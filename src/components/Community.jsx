@@ -3,10 +3,10 @@ import React from "react";
 const Community = () => {
   return (
     <div className="m-[100px] grid place-items-center">
-      <h1 className="text-amber-500 text-3xl uppercase md:text-3xl  lg:text-5xl  ">
+      <h1 className="text-amber-500 text-3xl text-center uppercase md:text-3xl  lg:text-5xl  ">
         We are old Mushin Youth Choir
       </h1>
-      <p className='text-xl text-sky-500 pt-2 w-[80%]'>
+      <p className='text-xl text-center text-sky-500 pt-2 w-[80%]'>
         We are a fast growing commmunity of people cut across ages from{" "}
         <b className="text-cyan-400">13-25</b>{" "}
       </p>

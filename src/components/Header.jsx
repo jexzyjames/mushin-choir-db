@@ -18,7 +18,7 @@ const Header = () => {
   const user = useSelector((state) => state.auth.user);
 
   return (
-    <div className=" m-0 md:h-9 px-[2%]  md:px-[10%] py-4 md:flex w-full relative justify-between  text-white  ">
+    <div className=" m-0 md:h-1  px-[2%]  md:px-[10%] py-4 md:flex w-full relative justify-between  text-white  ">
       {Logo}
       <div className=" absolute md:hidden md:relative top-7 md:right-0 md:top-0 right-0">
         <FaAlignLeft

@@ -15,7 +15,7 @@
   -moz-osx-font-smoothing: grayscale;
 }
 body{
-  overflow-y: scroll;
+  overflow-y: hidden;
   /* overflow-x: auto; */
 }
 .active{
@@ -28,6 +28,7 @@ body{
 @media (max-width: 768px) {
   body {
     font-size: 14px;
+    overflow-y: none;
   }
   .active {
     background-color: rgba(0, 0, 255, 0.49);
