@@ -92,9 +92,8 @@ const Dashboard = ({ title }) => {
 
         {/* MAIN CONTENT SECTION */}
         <Hero head={head} sethead={sethead} />
-        <p className="text-black font-bold text-2xl">hjhjhj</p>
         <div>
-          <Outlet />
+          {/* <Outlet /> */}
         </div>
       </div>
     </>
