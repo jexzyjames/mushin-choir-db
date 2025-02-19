@@ -45,7 +45,7 @@ const App = () => {
     },
   ];
   const ProtectedRoute = ({ user, children }) => {
-    return user ? children : <Navigate to="/login"   />;
+    return user ? children : <Navigate to="/login" replace  />;
   };
 
   useEffect(()=>{
@@ -64,12 +64,15 @@ const App = () => {
           </Route>
           <Route path="/reg" element={<Register />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/admin" element={ <ProtectedRoute user={user} >  <AdminPanel /> </ProtectedRoute> }/>
+          <Route  element={ <ProtectedRoute user={user] }>
+            <Route path ="/admin" element ={<AdminPanel/></Route> />
+          
+          </Route>
 
 
           {user ? (
-            <Route  element={ <Hero /> }>
-             
+            <Route  element={ <ProtectedRoute user={user} />  }>
+               <Route  element={ <Hero /> }/>
               <Route
                 path="lessons"
                 element={<Lessons  title={names[1].title} />}
@@ -91,6 +94,7 @@ const App = () => {
                 path="logout"
                 element={<Logout  title={names[3].title} />}
               />
+            </Route>
             </Route>
           ) : (
             <Route
