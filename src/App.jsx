@@ -72,7 +72,7 @@ const App = () => {
 
           {user ? (
             <Route  element={ <ProtectedRoute user={user} />  }>
-               <Route  element={ <Hero /> }/>
+               <Route  element={ <Hero /> } >
               <Route
                 path="lessons"
                 element={<Lessons  title={names[1].title} />}
