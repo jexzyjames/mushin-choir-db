@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import {NavLink,useNavigate, Outlet} from 'react-router-dom'
+import {NavLink,useNavigate,Link, Outlet} from 'react-router-dom'
 import {
     FaDashcube,
     FaList,
@@ -7,11 +7,14 @@ import {
     FaUser,
     FaAddressBook,
   } from "react-icons/fa6";
-  import { logoutUser } from "../redux/slices/authSlice";
+  import { logoutUser } from "../../redux/slices/authSlice";
 import { useSelector, useDispatch } from "react-redux";
-import { listenForAuthChanges } from "../redux/slices/authSlice";
+import { listenForAuthChanges } from "../../redux/slices/authSlice";
+import image from "../../assets/reg-img.png";
+import logo from "../../assets/logos.png";
+import { FaArrowAltCircleRight } from "react-icons/fa";
 
-const Hero = ({head, sethead}) => {
+const Hero = () => {
     const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
   const email = useSelector((state) => state.auth.user?.email);
@@ -22,9 +25,20 @@ const Hero = ({head, sethead}) => {
   const part = useSelector((state) => state.auth.user.part);
 
   const dispatch = useDispatch();
+  const [open, setOpen] = useState(false);
+  const [head, sethead] = useState("DASHBOARD");
   useEffect(() => {
     dispatch(listenForAuthChanges());
-  }, [dispatch, sethead, user,email, name, grade, age, group, part]);
+  }, [user,sethead]);
+
+  const Logo = (
+    <span>
+      <Link className="flex gap-[2px]" to="/">
+        <img className=" w-10 h-10" src={logo} alt="" />
+      </Link>
+    </span>
+  );
+  
   const logout = () => {
     dispatch(logoutUser())
       .unwrap()
@@ -32,15 +46,57 @@ const Hero = ({head, sethead}) => {
   };
 
   return (
-    <>
+    <div className='' >
+    <div className="grid  grid-cols-6 items-center overflow-hidden  w-full md:grid-cols-6 px-[1%] md:px-[1%] py-2 ">
+          <div className=" m-0 p-0 ">{Logo}</div>
+
+          <div className="col-span-3 w-full md:col-span-4 m-0 p-0 ">
+            <h1 className="md:text-2xl text-left   text-[16px]  font-extrabold font-mono">
+              {head}
+            </h1>
+          </div>
+
+          <div className="flex   col-span-2 md:col-span-1 ">
+            <div className="md:flex-row flex gap-2 items-center grid-cols-2 md:flex m-0  md:gap-2">
+              <img
+                className=" cursor-pointer rounded-[200px] w-8 h-8 bg-cover bg-center bg-slate-950  border-green-300 p-1  "
+                src={image}
+                onClick={() => setOpen(!open)}
+                alt="user"
+              />
+              {/* <ProfileImage userId={user?.uid} /> */}
+              <p>{name} </p>
+              {open && (
+                <div className="flex-col   transition-all flex gap-3  items-center right-1 z-50 p-2 mt-[270px]  md:mt-[260px] md:right-4 fixed w-[200px] bg-white shadow-md rounded-md  justify-center">
+                  <img
+                    className="rounded-[200px] w-20 h-20 bg-cover bg-center bg-slate-950  border-green-300 p-1  "
+                    src={image}
+                    alt="user"
+                  />
+                  <h1 className='flex gap-1' > <p className="text-yellow-700 font-bold " >{user.email}</p></h1>
+                  <h1 className='flex gap-1' >Hi! <p className="text-yellow-600 font-bold " >{user.name}</p></h1>
+                  <button
+                    onClick={() => {
+                      logout();
+                      setOpen(false);
+                    }}
+                    className=" flex justify center m-auto items-center gap-1 text-center w-full bg-gray-300 font-extrabold  rounded-md shadow-md p-1 "
+                  >
+                   <FaArrowAltCircleRight/> Sign out
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
         <div className="bg-slate -10 md:w-full w-[100%]  h-screen     flex flex- m-0  md:flex  md:flex-row ">
         {/* NAVIGATIONS SECTION */}
         <div className="w-[10%]  rounded-md   justify-start flex  items-end justify-self-end p-2 md:w-[20%]">
           <div className="flex  h-full justify-start items-start   flex-col  justify-self-end gap-2 md:gap-4 md:items-start w-full  ">
             <NavLink
               onClick={() => sethead("DASHBOARD")}
-              to=''
-              className={`flex gap-3 items-center  font-extrabold p-2`}
+              to='dash'
+              className={`flex gap-3 md:w-[100%] items-center  font-extrabold p-2`}
             >
               <p>
                 <FaDashcube className=' ' />
@@ -101,7 +157,7 @@ const Hero = ({head, sethead}) => {
 
         <div className="py-3 w-[100%]  flex-2 overflow-y-auto  flex-col  bg-white rounded-lg shadow-xl  md:col-span-3 m-0 px-[1%]">
           <div className="md:grid bg-blue-500 rounded-md  p-3  text-slate-50 mb-3">
-            <div className="flex w-full font-bold justify-between p-1">
+            <div className="block md:flex  w-full font-bold md:justify-between p-1">
 
             <p >Welcome to your Dashboard, <b className='text-yellow-500'>{name} </b>  !</p>
            
@@ -119,7 +175,7 @@ const Hero = ({head, sethead}) => {
 
         
       </div>
-    </>
+    </div>
   )
 }
 

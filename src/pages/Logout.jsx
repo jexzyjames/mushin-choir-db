@@ -3,20 +3,21 @@ import { logoutUser } from '../redux/slices/authSlice'
 import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from'react-redux'
 
-//   const user = useSelector((state) => state.auth.user);
 
 const Logout = () => {
     const dispatch = useDispatch()
+  const user = useSelector((state) => state.auth.user);
 
     const[modal, setModal] = useState(true)
     const navigate = useNavigate();
   return (
-    <div className='relative bg-slate-900  opacity-90  w-full  text-black' >
+    <div className='absolute top-0 m-auto flex justify-center items-center right-0 left-0 bottom-0 bg-slate-700   opacity-90  w-full  text-black' >
 
     {modal ? 
-     <div className='bg-blue-500 right-0 left-0  text-white flex justify-center flex-col  absolute text-center p-3  rounded-xl shadow-lg h-screen'>
-     <h1 className='text-xl mb-2 uppercase ' >Are you sure you want to log out</h1>
-     <div className='w-full flex gap-4 justify-center mt-3 items-center '>
+     <div className='bg-white  absolute mx-auto text-black flex  flex-col  text-center p-3  rounded-md shadow-md '>
+     <h1 className='md:text-xl mb-2 uppercase ' >Are you sure you want to log out</h1>
+     <h2 className='text-yellow-800 font-extrabold md:text-xl ' >{user.name}</h2>
+     <div className='w-full flex gap-4 justify-center mt-3 mb-3 items-center '>
          <button onClick={()=> {
             setModal(false)
              dispatch(logoutUser())

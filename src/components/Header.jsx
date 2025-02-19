@@ -18,7 +18,7 @@ const Header = () => {
   const user = useSelector((state) => state.auth.user);
 
   return (
-    <div className=" m-0 md:h-1  px-[2%]  md:px-[10%] py-4 md:flex w-full relative justify-between  text-white  ">
+    <div className=" m-0 md:h-1  px-[2%]   md:px-[10%] py-4 md:flex w-full relative justify-between  text-white  ">
       {Logo}
       <div className=" absolute md:hidden md:relative top-7 md:right-0 md:top-0 right-0">
         <FaAlignLeft
@@ -26,23 +26,23 @@ const Header = () => {
             setIsOpen(!isOpen);
             console.log(isOpen);
           }}
-          className="cursor-pointer w-[60px]"
+          className="cursor-pointer h-[20px] w-[90px]"
         />
       </div>
-      <nav className="md:flex flex flex-col md:justify-center">
+      <nav className="md:flex  flex flex-col md:justify-center">
         <ul
         onClick={()=>setIsOpen(true)}
-          className={`md:flex md:relative  opacity-0 justify-center items-center md:items-start flex flex-col md:flex-row absolute top-0 right-2 w-[150px] p-5 md:p-2 cursor-pointer ${
+          className={`md:flex md:relative   opacity-0 justify-start items-start md:items-start flex flex-col md:flex-row fixed top-0 h-[100%] bottom-0 right-0 w-[150px] p-5 py-[120px] md:p-2 cursor-pointer ${
             !isOpen
               ? " opacity-100  translate-y-0"
               : "opacity-0 -translate-y-5 pointer-events-none md:opacity-100 md:translate-y-0 md:pointer-events-auto"
-          }  md:relative md:bg-transparent  bg-slate-800 h-screen text-white  gap-4`}
+          }  md:relative md:bg-transparent bottom-0 top-0 fixed h-full   bg-slate-800  text-white  gap-4`}
         >
           <FaTimes
-            className=" md:hidden w-[60px] absolute top-7  md:top-0  right-0  flex justify-end items-end cursor-pointer "
+            className=" md:hidden h-[25px] w-[80px] absolute top-7  md:top-0  right-0  flex justify-end items-end cursor-pointer "
             onClick={() => setIsOpen(!isOpen)}
           />
-          <li className="mt-5 md:mt-0">
+          <li className="mt-1 md:mt-0">
             <NavLink to="/">Home</NavLink>
           </li>
 
@@ -83,7 +83,7 @@ const Header = () => {
         {user?.name ? (
           <div className="flex">
 
-          <Link className="px-4 py-1 flex gap-1 items-center justify-center bg-purple-500 rounded-md   text-white" to="/dash">
+          <Link className="px-4 py-1 flex gap-1 items-center justify-center bg-purple-500 rounded-md   text-white" to="dash">
             {" "}
             <FaUser /> {user.name}
           </Link>

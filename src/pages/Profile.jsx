@@ -38,7 +38,7 @@ const Profile = () => {
   })
   useEffect(()=>{
     
-  }, [user, dispatch, loading])
+  }, [user,loading])
   const { status, error } = useSelector((state) => state.auth);
   const handleSubmit = async (event) => {
     event.preventDefault();

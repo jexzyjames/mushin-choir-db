@@ -20,7 +20,7 @@ import Logout from "./pages/Logout";
 import { useSelector, useDispatch } from "react-redux";
 import { listenForAuthChanges } from "../src/redux/slices/authSlice";
 import AdminPanel from "./pages/Admin";
-import Hero from "./pages/Hero";
+import Hero from "./pages/layout/Hero";
 
 const App = () => {
   const tools = ["DASHBOARD", "LESSONS", "ASSIGNMENTS", "PROFILE"];
@@ -67,11 +67,15 @@ const App = () => {
 
 
           {user ? (
-            <Route path="/dash" element={<Dashboard />}>
+            <Route  element={<Hero />}>
              
               <Route
                 path="lessons"
                 element={<Lessons title={names[1].title} />}
+              />
+              <Route
+                path="dash"
+                element={<Dashboard title={names[1].title} />}
               />
               <Route
                 path="assignment"
@@ -84,7 +88,7 @@ const App = () => {
 
               <Route
                 path="logout"
-                element={<Logout title={names[3].title} />}
+                element={<Logout  title={names[3].title} />}
               />
             </Route>
           ) : (

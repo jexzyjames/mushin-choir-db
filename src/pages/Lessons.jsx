@@ -21,7 +21,7 @@ setLoading(false)
   useEffect(() => {
     setLoading(true)
     getGradeLesson()
-  }, [dispatch, loading]);
+  }, [ loading]);
 
   return (
 

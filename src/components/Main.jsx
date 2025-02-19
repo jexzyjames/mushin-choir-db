@@ -5,9 +5,9 @@ import {Outlet} from 'react-router-dom'
 
 const Main = () => {
   return (
-    <div className=' bg-black' >
+    <div className='h-screen overflow-auto bg-black' >
       <Header />
-      <div className='h-screen'>
+      <div className=''>
 
         <Outlet/>
       </div>

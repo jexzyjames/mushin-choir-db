@@ -17,7 +17,7 @@ const assignments = useSelector((state) => state.gradeContent.gradeData)
     useEffect(()=>{
         dispatch((getgradesLessons(user?.grade)))
         
-    },[dispatch])
+    },[user?.grade])
 
 
 
