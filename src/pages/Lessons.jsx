@@ -33,7 +33,7 @@ const Lessons = ({ title }) => {
 
             {assignments?.lessons && assignments.lessons.length > 0 ? (
               assignments.lessons.map((lessons) => (
-                <div className="bg-neutral-100 mb-2 p-2 md:p-4 rounded-xl shadow-lg ">
+                <div key={lessons.id} className="bg-neutral-100 mb-2 p-2 md:p-4 rounded-xl shadow-lg ">
                   <h1 className="text-2xl md:w-full  text-amber-800 mt-3 font-extrabold text-left">
                     {lessons.title}
                   </h1>

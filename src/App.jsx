@@ -6,6 +6,7 @@ import {
   Route,
   Navigate,
   useNavigate,
+  Outlet,
 } from "react-router-dom";
 // import { Main } from './components/Main'
 import Community from "./components/Community";
@@ -23,9 +24,9 @@ import AdminPanel from "./pages/Admin";
 import Hero from "./pages/layout/Hero";
 
 const App = () => {
-  const tools = ["DASHBOARD", "LESSONS", "ASSIGNMENTS", "PROFILE"];
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch()
+  
   const names = [
     {
       title: "DASHBOARD",
@@ -44,7 +45,7 @@ const App = () => {
     },
   ];
   const ProtectedRoute = ({ user, children }) => {
-    return user ? children : <Navigate to="/login" replace />;
+    return user ? children : <Navigate to="/login"   />;
   };
 
   useEffect(()=>{
@@ -63,15 +64,15 @@ const App = () => {
           </Route>
           <Route path="/reg" element={<Register />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/admin" element={ <ProtectedRoute>  <AdminPanel /> </ProtectedRoute> }/>
+          <Route path="/admin" element={ <ProtectedRoute user={user} >  <AdminPanel /> </ProtectedRoute> }/>
 
 
           {user ? (
-            <Route  element={ <ProtectedRoute><Hero/></ProtectedRoute>  }>
+            <Route  element={ <Hero /> }>
              
               <Route
                 path="lessons"
-                element={<Lessons title={names[1].title} />}
+                element={<Lessons  title={names[1].title} />}
               />
               <Route
                 path="dash"
@@ -79,7 +80,7 @@ const App = () => {
               />
               <Route
                 path="assignment"
-                element={<Assignments title={names[2].title} />}
+                element={<Assignments  title={names[2].title} />}
               />
               <Route
                 path="profile/:id"

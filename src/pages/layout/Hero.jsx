@@ -29,7 +29,7 @@ const Hero = () => {
   const [head, sethead] = useState("DASHBOARD");
   useEffect(() => {
     dispatch(listenForAuthChanges());
-  }, [user,sethead]);
+  }, []);
 
   const Logo = (
     <span>
@@ -87,7 +87,7 @@ const Hero = () => {
                   {/* Modal for Logout */}
                   
                       {modal ? 
-                  <div className='absolute top-0 m-auto z-50 flex justify-center items-center  right-0 left-0 bottom-0 bg-slate-700   opacity-100  w-full  text-black' >
+                  <div className='absolute top-0 m-auto  flex justify-center items-center  right-0 left-0 bottom-0 bg-slate-700   opacity-100  w-full  text-black' >
 
                        <div className='bg-white  absolute top-0 right-0 left-0  bottom-0  text-black flex  flex-col  text-center p-3  rounded-md shadow-md '>
                        <h1 className='md:text-xl mb-2 uppercase ' >Are you sure you want to log out</h1>
