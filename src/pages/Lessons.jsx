@@ -8,6 +8,18 @@ const Lessons = ({ title }) => {
   const dispatch = useDispatch();
   const grade = user?.grade;
   const [loading, setLoading] = useState(false);
+  const[page, setPage] = useState(0)
+  const totalPage = 2
+  const nextPage = () =>{
+    if(page+ 1 <= totalPage - 1){
+      setPage((next) => next + 1)
+    }
+  }
+  const prevPage = () =>{
+    if(page-1 >= 0){
+      setPage((next) => next - 1)
+    }
+  }
   const getGradeLesson = async () => {
     setLoading(false);
     dispatch(getgradesLessons(user?.grade));
@@ -32,8 +44,8 @@ const Lessons = ({ title }) => {
             </div>
 
             {assignments?.lessons && assignments.lessons.length > 0 ? (
-              assignments.lessons.map((lessons) => (
-                <div key={lessons.id} className="bg-neutral-100 mb-2 p-2 md:p-4 rounded-xl shadow-lg ">
+              assignments.lessons.map((lessons, index) => (
+                <div key={lessons.id} className={`${ index !== page && 'hidden'} bg-neutral-100 mb-2 p-2 md:p-4 rounded-xl shadow-lg`}>
                   <h1 className="text-2xl md:w-full  text-amber-800 mt-3 font-extrabold text-left">
                     {lessons.title}
                   </h1>
@@ -48,6 +60,15 @@ const Lessons = ({ title }) => {
                 No lessons available
               </h1>
             )}
+            
+            {assignments?.lessons && assignments.lessons.length > 0 ? (
+              assignments.lessons.map((_, index) => (
+                <button key={index} onClick={()=> setPage(index)}>{index}</button>
+              ))
+            ) : (
+             <></>
+            )}
+            {}
           </div>
         </div>
       )}
