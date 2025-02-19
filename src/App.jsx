@@ -43,9 +43,9 @@ const App = () => {
       title: "PROFILE",
     },
   ];
-  // const ProtectedRoute = ({ user, children }) => {
-  //   return user ? children : <Navigate to="/login" replace />;
-  // };
+  const ProtectedRoute = ({ user, children }) => {
+    return user ? children : <Navigate to="/login" replace />;
+  };
 
   useEffect(()=>{
     dispatch(listenForAuthChanges())
@@ -63,11 +63,11 @@ const App = () => {
           </Route>
           <Route path="/reg" element={<Register />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/admin" element={<AdminPanel />}/>
+          <Route path="/admin" element={ <ProtectedRoute>  <AdminPanel /> </ProtectedRoute> }/>
 
 
           {user ? (
-            <Route  element={<Hero />}>
+            <Route  element={ <ProtectedRoute><Hero/></ProtectedRoute>  }>
              
               <Route
                 path="lessons"
