@@ -64,37 +64,43 @@ const App = () => {
           </Route>
           <Route path="/reg" element={<Register />} />
           <Route path="/login" element={<Login />} />
-          <Route  element={ <ProtectedRoute user={user}/>}>
+          <Route>
+            <ProtectedRoute user={user}>
+
             <Route path ="/admin" element ={<AdminPanel/>} />
+            </ProtectedRoute>
           
           </Route>
 
 
           {user ? (
-            <Route  element={ <ProtectedRoute user={user} />  }>
+            <Route>
+              <ProtectedRoute user={user}>
+
                <Route  element={ <Hero /> } >
               <Route
                 path="lessons"
                 element={<Lessons  title={names[1].title} />}
-              />
+                />
               <Route
                 path="dash"
                 element={<Dashboard title={names[1].title} />}
-              />
+                />
               <Route
                 path="assignment"
                 element={<Assignments  title={names[2].title} />}
-              />
+                />
               <Route
                 path="profile/:id"
                 element={<Profile title={names[3].title} />}
-              />
+                />
 
               <Route
                 path="logout"
                 element={<Logout  title={names[3].title} />}
-              />
+                />
             </Route>
+                </ProtectedRoute>
             </Route>
           ) : (
             <Route
