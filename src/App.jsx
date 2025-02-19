@@ -5,7 +5,6 @@ import {
   Link,
   Route,
   Navigate,
-  useNavigate,
   Outlet,
 } from "react-router-dom";
 // import { Main } from './components/Main'
@@ -44,8 +43,8 @@ const App = () => {
       title: "PROFILE",
     },
   ];
-  const ProtectedRoute = ({ user, children }) => {
-    return user ? children : <Navigate to="/login" replace  />;
+  const ProtectedRoute = ({ user }) => {
+    return user ? <Outlet/> : <Navigate to="/login" replace  />;
   };
 
   useEffect(()=>{
@@ -64,43 +63,37 @@ const App = () => {
           </Route>
           <Route path="/reg" element={<Register />} />
           <Route path="/login" element={<Login />} />
-          <Route>
-            <ProtectedRoute user={user}>
-
+          <Route  element={ <ProtectedRoute user={user}/>}>
             <Route path ="/admin" element ={<AdminPanel/>} />
-            </ProtectedRoute>
           
           </Route>
 
 
           {user ? (
-            <Route>
-              <ProtectedRoute user={user}>
-
-               <Route  element={ <Hero /> } >
+            <Route  element={ <ProtectedRoute user={user} />  }>
+               <Route  element={ <Hero /> }>
               <Route
                 path="lessons"
                 element={<Lessons  title={names[1].title} />}
-                />
+              />
               <Route
                 path="dash"
                 element={<Dashboard title={names[1].title} />}
-                />
+              />
               <Route
                 path="assignment"
                 element={<Assignments  title={names[2].title} />}
-                />
+              />
               <Route
                 path="profile/:id"
                 element={<Profile title={names[3].title} />}
-                />
+              />
 
               <Route
                 path="logout"
                 element={<Logout  title={names[3].title} />}
-                />
+              />
             </Route>
-                </ProtectedRoute>
             </Route>
           ) : (
             <Route
