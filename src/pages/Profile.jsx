@@ -88,10 +88,11 @@ return (
             </h1>
 
             <div>
-              <h1 className="text-black mt-2 text-md mb-1">Name</h1>
+              <h1 className= "  text-black mt-2 text-md mb-1">Name</h1>
               <input
-                className="text-black placeholder:text-slate-900  bg-white border w-full rounded-md p-1  mb-2 "
+                className="disabled:bg-slate-100 disabled:cursor-not-allowed disabled:border-0 disabled:text-slate-600 text-black placeholder:text-slate-900  bg-white border w-full rounded-md p-1  mb-2 "
                 type="text"
+                disabled
                 value={val.name} 
                 onChange={(e)=> setVal({...val, name: e.target.value}) }
                 placeholder="Chukwuma Ciroma"
@@ -111,8 +112,9 @@ return (
             <div>
               <h1 className="text-black text-md mb-1">Age</h1>
               <input
-                className="text-black  placeholder:text-slate-900  bg-white border w-full rounded-md p-1  mb-2 "
+                className= " disabled:cursor-not-allowed disabled:text-slate-600 disabled:border-0 disabled:bg-slate-100 text-black  placeholder:text-slate-900  bg-white border w-full rounded-md p-1  mb-2 "
                 type="number"
+                disabled
                 value={val.age}
                 onChange={(e)=> setVal({...val, age: e.target.value}) }
                
@@ -157,19 +159,19 @@ return (
             </div>
 
             <div>
-              <h1 className="text-black text-md mb-1">Grade</h1>
+              <h1 className="  text-black text-md mb-1">Grade</h1>
               <select
                value={val.grade}
                onChange={(e)=> setVal({...val, grade: e.target.value}) }
-               o
+               
                 className=" text-black md:mb-2 cursor-pointer mb-4 placeholder:text-slate-900  bg-white border rounded-md p-1 w-full "
                 name="group"
-                id=""
+                
               >
                 <option className=" bg-white" value="">
                   -- SELECT GRADE --
                 </option>
-                <option className=" bg-white" value="PRELIM">
+                <option  className=" bg-white" value="PRELIM">
                   PRELIM
                 </option>
                 <option className=" bg-white" value="GRADE 1">
@@ -178,7 +180,7 @@ return (
                 <option className=" bg-white" value="GRADE 2">
                   GRADE 2
                 </option>
-                <option className=" bg-white" value="GRADE 3">
+                <option  className=" bg-white" value="GRADE 3">
                   GRADE 3
                 </option>
                 <option className=" bg-white" value="GRADE 4">

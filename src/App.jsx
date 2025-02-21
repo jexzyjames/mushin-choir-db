@@ -21,7 +21,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { listenForAuthChanges } from "../src/redux/slices/authSlice";
 import AdminPanel from "./pages/Admin";
 import Hero from "./pages/layout/Hero";
-
+import About from "./components/About";
+import Contact from "./components/Contact";
 const App = () => {
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch()
@@ -43,13 +44,17 @@ const App = () => {
       title: "PROFILE",
     },
   ];
-  const ProtectedRoute = ({ user }) => {
-    return user ? <Outlet/> : <Navigate to="/login" replace  />;
+  const ProtectedRoute = () => {
+    const user = useSelector((state) => state.auth.user);
+    if(!user){
+      return <Navigate to='/login' replace />
+    }
+    return  <Outlet/>  ;
   };
 
   useEffect(()=>{
     dispatch(listenForAuthChanges())
-  },[])
+  },[user])
 
   return (
     <div>
@@ -58,19 +63,18 @@ const App = () => {
           {/* <Header/> */}
           <Route path="/" element={<Main />}>
             <Route path="community" element={<Community />} />
-            <Route path="about" element={<Register />} />
-            <Route path="contact" element={<Register />} />
+            <Route path="about" element={<About />} />
+            <Route path="contact" element={<Contact />} />
           </Route>
           <Route path="/reg" element={<Register />} />
           <Route path="/login" element={<Login />} />
-          <Route  element={ <ProtectedRoute user={user}/>}>
+          <Route  element={ <ProtectedRoute />}>
             <Route path ="/admin" element ={<AdminPanel/>} />
           
           </Route>
 
 
           {user ? (
-            <Route  element={ <ProtectedRoute user={user} />  }>
                <Route  element={ <Hero /> }>
               <Route
                 path="lessons"
@@ -78,6 +82,7 @@ const App = () => {
               />
               <Route
                 path="dash"
+                index
                 element={<Dashboard title={names[1].title} />}
               />
               <Route
@@ -93,7 +98,6 @@ const App = () => {
                 path="logout"
                 element={<Logout  title={names[3].title} />}
               />
-            </Route>
             </Route>
           ) : (
             <Route
