@@ -1,18 +1,24 @@
-import React, { useState,useRef } from "react";
+import React, { useState,useRef, useEffect } from "react";
 import regImg from "../assets/reg-img.png";
 import { useNavigate, Link } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { registerUser } from "../redux/slices/authSlice";
 import { useSelector, useDispatch } from "react-redux";
-import { FaEye,FaEyeSlash } from "react-icons/fa6";
+import { FaEye,FaEyeSlash, FaFlag } from "react-icons/fa6";
+import { FaTimes, FaMarker,FaCheck  } from "react-icons/fa";
 import { createUser } from "../redux/slices/userSlice";
+import Modals from "../modals/Modals";
+import { TbRubberStampOff } from "react-icons/tb";
 const Register = () => {
   const dispatch = useDispatch();
   const passwordRef = useRef(null);
+  const lengthRef = useRef(0);
+  const phoneRef = useRef(0);
   const[passRef, setPassRef] = useState('password');
   const navigate = useNavigate();
+  const [modal, setModal] = useState(false)
 
-  
+  useEffect(()=>{},[modal])
   const { status, error } = useSelector((state) => state.auth);
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -20,6 +26,7 @@ const Register = () => {
     .unwrap()
     .then(() => {
       toast.error('user registered successfully');
+      setModal(true);
       navigate("/login");
     })
     .catch((err) => {
@@ -35,14 +42,14 @@ const Register = () => {
 
 
 
- 
   const[displayName, setDisplayName] = useState('')
   const[email, setEmail] = useState('')
+  const[phoneNum, setPhoneNum] = useState(0)
   const[password, setPassword] = useState('')
   const[grade, setGrade] = useState('')
   const [group, setGroup] = useState('');
   const [district, setDistrict] = useState('');
-  const [age, setAge] = useState(0);
+  const [age, setAge] = useState('');
   const [part, setPart] = useState('');
   const [image, setImage] = useState('');
   return (
@@ -75,28 +82,45 @@ const Register = () => {
               <input
                 className="text-black placeholder:text-slate-900  bg-white border w-full rounded-md p-1  mb-2 "
                 type="text"
+                ref={lengthRef}
+                required
                 value={displayName} 
+                maxLength={20}
                 onChange={(e)=>setDisplayName(e.target.value)}
                 placeholder="Chukwuma Ciroma"
               />
             </div>
+            {<p className='absolute hidden' >{displayName.length == lengthRef.current.maxLength && toast.error('Name is more than required')}</p>}
 
             <div>
               <h1 className="text-black text-md mb-1">Whatsapp Number</h1>
               <input
                 className="text-black placeholder:text-slate-900  bg-white border w-full rounded-md p-1  mb-2 "
-                type="number"
-              
+                type="tel"
+                required
+                value={phoneNum}
+                ref={phoneRef}
+                min='11'
+                max='14'
+                // pattern="/^-?\d+$/"
+                onChange={(e)=>setPhoneNum(e.target.value)}
+
+                maxLength={12}
                 placeholder="01234567890"
               />
             </div>
+            {
 
-            <div>
-              <h1 className="text-black text-md mb-1">Age</h1>
+                <p className='absolute hidden ' >{phoneNum.toString().length == phoneRef.current.maxLength && toast('PhoneNumber is more than 11')}</p>
+              }
+           
+            <div className="w-full">
+              <h1 className="text-black cursor-pointer text-md mb-1">D-O-B</h1>
               <input
-                className="text-black  placeholder:text-slate-900  bg-white border w-full rounded-md p-1  mb-2 "
-                type="number"
-                value={age === 0 ? ' ' : null} 
+                className="text-black  cursor-pointer  placeholder:text-slate-900  bg-white border w-full rounded-md p-1  mb-2 "
+                type="date"
+                required
+                value={age} 
                 onChange={(e) => setAge(e.target.value)  }
                 placeholder="13"
               />
@@ -107,6 +131,7 @@ const Register = () => {
               <input
                 className="text-black placeholder:text-slate-900  bg-white border w-full rounded-md p-1  mb-2 "
                 type="email"
+                required
                 value={email}
                 onChange={(e)=> setEmail(e.target.value)  }
                 placeholder="email@example.com"
@@ -122,6 +147,7 @@ const Register = () => {
                 type={passRef}
                 ref={passwordRef}
                 value={password}
+                required
                 onChange={(e)=> {
                   setPassword(e.target.value)
                  
@@ -147,6 +173,7 @@ const Register = () => {
                 onChange={(e)=> setPart(e.target.value)  }
                 className="text-black cursor-pointer placeholder:text-slate-900  bg-white border rounded-md p-1 w-full "
                 name="parts"
+                required
                 id=""
               >
                 <option value="">-- SELECT PARTS --</option>
@@ -166,7 +193,7 @@ const Register = () => {
                 }
                 className=" text-black cursor-pointer placeholder:text-slate-900  bg-white border rounded-md w-full p-1 "
                 name="group"
-                id=""
+                required
               >
                 <option value="">-- SELECT GROUP --</option>
                 <option value="ODIOLOWO">ODIOLOWO</option>
@@ -182,6 +209,7 @@ const Register = () => {
                onChange={(e)=> setGrade(e.target.value)  }
                 className=" text-black md:mb-2 cursor-pointer mb-4 placeholder:text-slate-900  bg-white border rounded-md p-1 w-full "
                 name="group"
+                required
                 id=""
               >
                 <option className=" bg-white" value="">
@@ -218,7 +246,41 @@ const Register = () => {
 
           </div>
         </form>
-      
+        {modal && 
+        
+      <Modals>
+      {modal ? 
+             <div className='bg-white  absolute mx-auto text-black flex  flex-col w-full max-w-[300px]  text-center p-3  rounded-md shadow-md '>
+             <h1 className='md:text-2xl font-extrabold flex gap-2 text-sky-500 mb-2 uppercase ' > Confirm Details <FaFlag/></h1>
+             <p className='text-black flex gap-2 font-bold '>Name: <p className="text-green-500 font-extrabold"> {displayName}</p></p>
+             <p className='text-black flex gap-2 font-bold '>D-O-B: <p className="text-green-500 font-extrabold"> {age}</p></p>
+             <p className='text-black flex gap-2 font-bold '>Email: <p className="text-green-500 font-extrabold"> {email}</p></p>
+             <p className='text-black flex gap-2 font-bold '>Grade: <p className="text-green-500 font-extrabold"> {grade}</p></p>
+             <p className='text-black flex gap-2 font-bold '>Password: <p className="text-green-500 font-extrabold"> {password}</p></p>
+             <p className='text-black flex gap-2 font-bold '>Phone Number: <p className="text-green-500 font-extrabold"> {phoneNum}</p></p>
+             <p className='text-black flex gap-2 font-bold '>Part: <p className="text-green-500 font-extrabold"> {part}</p></p>
+             <p className='text-black flex gap-2 font-bold '>Group: <p className="text-green-500 font-extrabold"> {group}</p></p>
+             {/* <h2 className='text-yellow-800 font-extrabold md:text-xl ' >{displayName}</h2> */}
+             <div className='w-full flex gap-4 justify-center mt-3 mb-3 items-center '>
+                 <button onClick={()=> {
+                    setModal(false);
+                    if(user){
+
+                      navigate('/login')
+                    }
+                 }} className='text-white w-full rounded-md shadow-md p-2 text-md flex gap-2 items-center bg-sky-500' ><FaCheck className="text-green-700 bg-white rounded-lg text-xl p-1" />Yes</button>
+                 <button onClick={()=> {
+                     setModal(false)
+                    
+                 }} className='text-white flex gap-2  items-center w-full rounded-md shadow-md p-2 text-md  bg-red-500' > <FaTimes className="text-red-300 bg-white rounded-lg text-xl p-1" /> NO</button>
+             </div>
+         </div> 
+         : 
+         ''
+            
+        }
+      </Modals>
+        }
     </div>
   );
 };

@@ -53,17 +53,19 @@ const Lessons = ({ title }) => {
                   <p className="mb-3 text-[13px]  md:w-full md:text-md font-bold  ">
                     {lessons.content}
                   </p>
+
+                  
                 </div>
               ))
             ) : (
               <h1 className="text-center text-2xl text-amber-800 font-extrabold">
-                No lessons available
+                No lessons available 
               </h1>
             )}
             
             {assignments?.lessons && assignments.lessons.length > 0 ? (
-              assignments.lessons.map((_, index) => (
-                <button key={index} onClick={()=> setPage(index)}>{index}</button>
+              assignments.lessons.map((lessons, index) => (
+                <button  className={` {${index} &&  'bg-red-700' }  bg-slate-900 rounded-md gap-3 text-white p-2 border justify-center items-center justify-self-end  flex hover:bg-sky-600`} key={index} onClick={()=> setPage(index)}>{index}</button>
               ))
             ) : (
              <></>

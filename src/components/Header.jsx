@@ -18,7 +18,7 @@ const Header = () => {
   const user = useSelector((state) => state.auth.user);
 
   return (
-    <div className=" m-0 md:h-1  px-[2%]   md:px-[10%] py-4 md:flex w-full relative justify-between  text-white  ">
+    <div className=" m-0 md:h-1  px-[2%]   md:px-[10%] py-4 md:flex w-full relative justify-between  text-slate-900  ">
       {Logo}
       <div className=" absolute md:hidden md:relative top-7 md:right-0 md:top-0 right-0">
         <FaAlignLeft
@@ -32,17 +32,17 @@ const Header = () => {
       <nav className="md:flex  flex flex-col md:justify-center">
         <ul
         onClick={()=>setIsOpen(true)}
-          className={`md:flex md:relative   opacity-0 justify-start items-start md:items-start flex flex-col md:flex-row fixed top-0 h-[100%] bottom-0 right-0 w-[150px] p-5 py-[120px] md:p-2 cursor-pointer ${
+          className={`md:flex md:relative bg-sky-500 text-white    opacity-0 justify-start items-start md:items-start flex flex-col md:flex-row fixed top-0 h-[100%] bottom-0 right-0 w-[150px] p-5 py-[120px] md:p-2 cursor-pointer ${
             !isOpen
-              ? " opacity-100  translate-y-0"
-              : "opacity-0 -translate-y-5 pointer-events-none md:opacity-100 md:translate-y-0 md:pointer-events-auto"
-          }  md:relative md:bg-transparent bottom-0 top-0 fixed h-full   bg-slate-800  text-white  gap-4`}
+              ? " opacity-100 text-white  translate-y-0"
+              : "opacity-0  text-white-translate-y-5 pointer-events-none md:opacity-100 md:translate-y-0 md:pointer-events-auto"
+          }  md:relative md:bg-transparent bottom-0 top-0 fixed h-full   bg-sky-800  text-amber-500  gap-4`}
         >
           <FaTimes
             className=" md:hidden h-[25px] w-[80px] absolute top-7  md:top-0  right-0  flex justify-end items-end cursor-pointer "
             onClick={() => setIsOpen(!isOpen)}
           />
-          <li className="mt-1 md:mt-0">
+          <li className="mt-1  md:mt-0">
             <NavLink to="/">Home</NavLink>
           </li>
 

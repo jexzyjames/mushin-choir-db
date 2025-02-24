@@ -5,9 +5,9 @@ import {Outlet} from 'react-router-dom'
 
 const Main = () => {
   return (
-    <div className='h-screen overflow-auto bg-black' >
+    <div className=' bg-no-repeat opacity-105 bg-opacity-100 bg-cover bg-center bg-[url("/src/assets/prayer.jfif")]  text-white' >
       <Header />
-      <div className=''>
+      <div className=' '>
 
         <Outlet/>
       </div>

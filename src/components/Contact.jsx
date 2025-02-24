@@ -1,25 +1,79 @@
-import React from 'react'
+import React from "react";
+import { FaAddressCard, FaMailBulk } from "react-icons/fa";
+import { FaAddressBook, FaBox, FaMapLocation, FaMessage, FaPhone } from "react-icons/fa6";
 
 const Contact = () => {
   return (
-    <div className='grid md:mt-10 grid-cols-1 md:grid-cols-2 gap-3 justify-between w-full'>
-        <div>
-            <form className=' flex flex-col gap-3  bg-white rounded-md shadow-md p-2 text-black' >
-                <label className='font-bold text-sky-500' htmlFor="namme">Name</label>
-                <input className=' border-y-2 bg-slate-500 p-2  border-purple-600 border-x-0 outline-o font-bold border ' type="text" placeholder='Your Name'  />
-                <label className='font-bold text-sky-500' htmlFor="message">Phone Nunber</label>
-                <input className=' border-y-2 bg-slate-500 p-2  border-purple-600 border-x-0 outline-o font-bold border ' type="number" placeholder='Your Number'  />
+    <div className=" md:px-[10%] px-4  gap-x-[40px]  grid w-full place-items-center justify-center items-center  mx-auto  h-screen md:mx-auto md:mt-[5%] ">
+      <h1 className="font-extrabold text-amber-500 text-center">CONTACT US </h1>
+      <h2 className="font-bold  text-white text-center">Get In Touch</h2>
+      <div className="grid md:h-screen  grid-cols-1 md:grid-cols-2 gap-3 justify-between w-full">
+      {/* left sction */}
+        <div className="flex  flex-col w-full h-[100%">
+          <h1 className="mb-4 flex gap-4 items-center  text-xl text-white font-extrabold" >Send us a message 
+          <span><FaMessage /></span>
+          </h1>
+          <p>
+            Feel free to reach out through contact form or find our contact
+            information below. Your feedback, questions, and suggestionss are
+            important to us as we strive to provide exceptional service to our
+            university community.
+          </p>
 
-                <label className='font-bold text-sky-500' htmlFor="message">Feedbacks</label>
-                <textarea className='bg-slate-600 p-2 font-bold '  placeholder='Your Feedbacks ' ></textarea>
-                <button className='bg-sky-500 p-2 m-0 w-[60px] hover:scale-x-105 hover:bg-amber-400 flex justify-start items-start text-white  cursor-pointer rounded-md ' type="submit">Submit</button>
-            </form>
+          <ul className="mt-5 flex flex-col gap-3">
+            <li className="flex items-center gap-2">
+                <FaMessage/>
+               Contact: <span className="text-amber-400 font-extrabold">ycmushin@gmail.com</span>
+            </li>
+            <li className="flex items-center gap-2">
+                <FaPhone />
+                <span className="text-amber-400 font-extrabold">+234 7045 666 940</span>
+            </li>
+            <li className="flex items-center gap-2">
+                <FaMapLocation />
+                <span className="text-amber-400 font-extrabold">Owo Street, Alafia</span>
+            </li>
+          </ul>
         </div>
-        <div>
-            <h1>GET IN TOUCH</h1>
+
+        {/* form section */}
+        <div className="flex flex-col w-full h-full" >
+          <form className=" flex flex-col gap-3 w-full h-full  rounded-md  p-2 text-black">
+            <label className="font-extrabold text-sky-500" htmlFor="namme">
+              Name
+            </label>
+            <input
+              className=" border-y-2  p-2    outline-0 font-bold border "
+              type="text"
+              placeholder="Your Name"
+            />
+            <label className="font-extrabold text-sky-500" htmlFor="message">
+              Phone Nunber
+            </label>
+            <input
+              className="   p-2   outline-0 font-bold border "
+              type="number"
+              placeholder="Your Number"
+            />
+
+            <label className="font-extrabold text-sky-500" htmlFor="message">
+              Send  your Feedbacks
+            </label>
+            <textarea
+              className=" p-2 font-bold "
+              placeholder=" Write Your Feedbacks "
+            ></textarea>
+            <button
+              className="bg-sky-500 p-2 m-0  hover:scale-x-105 hover:bg-violet-400 flex justify-center items-start text-white  cursor-pointer rounded-md "
+              type="submit"
+            >
+              Submit
+            </button>
+          </form>
         </div>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default Contact
+export default Contact;
