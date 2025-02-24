@@ -166,7 +166,7 @@ const App = () => {
                         d="M12 9v2m0 4v2m0-6v2M2 7h16M7 17h7a2 2 0 002-2H7a2 2 0 00-2 2zm10 0h7a2 2 0 002-2h7a2 2 0 00-2 2z"
                       />
                     </svg>
-                    <h1>Oops! You're not logged in.</h1>
+                    <h1 className='font-bold text-xl text-amber-700' >Oops! You're not Logged in.</h1>
                   </h1>
 
                   <div className=" shadow-md mt-3 bg-slate-300 rounded-lg p-3 flex gap-4  justify-center items-center">

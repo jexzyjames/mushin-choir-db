@@ -8,37 +8,33 @@ import { useSelector, useDispatch } from "react-redux";
 import {updateDoc, doc} from 'firebase/firestore'
 import { db } from "../config/firebaseconfig";
 import {FaList } from "react-icons/fa6";
+import Modals from "../modals/Modals";
 const Profile = () => {
   const dispatch = useDispatch();
+  // const[modal,setModal]= useState(false)
   const {id} = useParams();
   const { user } = useSelector((state) => state.auth);
-  const passwordRef = useRef(null);
-  const[passRef, setPassRef] = useState('password');
   const navigate = useNavigate();
-  const[displayName, setDisplayName] = useState(user.name)
-  const[email, setEmail] = useState(user.name)
-  const[password, setPassword] = useState( user.password)
-  const[grade, setGrade] = useState(user.grade)
-  const [group, setGroup] = useState(user.group);
-  const [district, setDistrict] = useState('');
-  const [age, setAge] = useState(user.age);
-  const [part, setPart] = useState(user.part);
-  const [image, setImage] = useState('');
-
+  const[displayName] = useState(user.name)
+  const[grade] = useState(user.grade)
+  const [group ] = useState(user.group);
+  const [phoneNum] = useState(user.number);
+ const [part] = useState(user.part);
   const[loading, setLoading] = useState(false)
+  const [modal, setModal] = useState(false)
  
 
   const [val, setVal] = useState({
     grade: grade,
     part: part,
     name: displayName,
+    phoneNum:phoneNum,
     group: group,
-    age:age,
 
   })
   useEffect(()=>{
-    
-  }, [user,loading])
+    handleSubmit()
+  }, [modal])
   const { status, error } = useSelector((state) => state.auth);
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -98,6 +94,22 @@ return (
                 placeholder="Chukwuma Ciroma"
               />
             </div>
+            <div>
+              <h1 className="text-black text-md mb-1">Whatsapp Number</h1>
+              <input
+                className="text-black placeholder:text-slate-900  bg-white border w-full rounded-md p-1  mb-2 "
+                type="tel"
+                required
+                value={phoneNum}
+                min='11'
+                max='14'
+                // pattern="/^-?\d+$/"
+                onChange={(e)=>setVal({...val, phoneNum: e.target.value})}
+
+                maxLength={12}
+                placeholder="01234567890"
+              />
+            </div>
 
             {/* <div>
               <h1 className="text-black text-md mb-1">Whatsapp Number</h1>
@@ -109,17 +121,7 @@ return (
               />
             </div> */}
 
-            <div>
-              <h1 className="text-black text-md mb-1">Age</h1>
-              <input
-                className= " disabled:cursor-not-allowed disabled:text-slate-600 disabled:border-0 disabled:bg-slate-100 text-black  placeholder:text-slate-900  bg-white border w-full rounded-md p-1  mb-2 "
-                type="number"
-                disabled
-                value={val.age}
-                onChange={(e)=> setVal({...val, age: e.target.value}) }
-               
-              />
-            </div>
+           
 
            
 
@@ -201,6 +203,37 @@ return (
       </div>
 
           </div>
+         {modal && 
+         <Modals>
+            {modal ? 
+                       <div className='bg-white  absolute mx-auto text-black flex  flex-col w-full max-w-[300px]  text-center p-3  rounded-md shadow-md '>
+                       <p className='text-black flex gap-2 font-bold '>Name: <p className="text-green-500 font-extrabold"> {user?.name}</p></p>
+                       <p className='text-black flex gap-2 font-bold '>Email: <p className="text-green-500 font-extrabold"> {user?.email}</p></p>
+                       <p className='text-black flex gap-2 font-bold '>Grade: <p className="text-green-500 font-extrabold"> {user?.grade}</p></p>
+                       <p className='text-black flex gap-2 font-bold '>Phone Number: <p className="text-green-500 font-extrabold"> {user?.phoneNum}</p></p>
+                       <p className='text-black flex gap-2 font-bold '>Part: <p className="text-green-500 font-extrabold"> {user?.part}</p></p>
+                       <p className='text-black flex gap-2 font-bold '>Group: <p className="text-green-500 font-extrabold"> {user?.group}</p></p>
+                       {/* <h2 className='text-yellow-800 font-extrabold md:text-xl ' >{displayName}</h2> */}
+                       <div className='w-full flex gap-4 justify-center mt-3 mb-3 items-center '>
+                           <button onClick={()=> {
+                              setModal(false);
+                              if(user){
+          
+                                navigate('')
+                              }
+                           }} className='text-white w-full rounded-md shadow-md p-2 text-md flex gap-2 items-center bg-sky-500' ><FaCheck className="text-green-700 bg-white rounded-lg text-xl p-1" />Yes</button>
+                           <button onClick={()=> {
+                               setModal(false)
+                              
+                           }} className='text-white flex gap-2  items-center w-full rounded-md shadow-md p-2 text-md  bg-red-500' > <FaTimes className="text-red-300 bg-white rounded-lg text-xl p-1" /> NO</button>
+                       </div>
+                   </div> 
+                   : 
+                   ''
+                      
+                  }
+         </Modals>
+         }
         </form>
       
     </div>
