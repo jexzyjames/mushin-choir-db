@@ -38,6 +38,7 @@ const Profile = () => {
   const { status, error } = useSelector((state) => state.auth);
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setModal(true)
     setLoading(true)
     console.log(user);
 
@@ -100,7 +101,7 @@ return (
                 className="text-black placeholder:text-slate-900  bg-white border w-full rounded-md p-1  mb-2 "
                 type="tel"
                 required
-                value={phoneNum}
+                value={val.phoneNum}
                 min='11'
                 max='14'
                 // pattern="/^-?\d+$/"
@@ -207,12 +208,12 @@ return (
          <Modals>
             {modal ? 
                        <div className='bg-white  absolute mx-auto text-black flex  flex-col w-full max-w-[300px]  text-center p-3  rounded-md shadow-md '>
-                       <p className='text-black flex gap-2 font-bold '>Name: <p className="text-green-500 font-extrabold"> {user?.name}</p></p>
+                       <p className='text-black flex gap-2 font-bold '>Name: <p className="text-green-500 font-extrabold"> {val.name}</p></p>
                        <p className='text-black flex gap-2 font-bold '>Email: <p className="text-green-500 font-extrabold"> {user?.email}</p></p>
-                       <p className='text-black flex gap-2 font-bold '>Grade: <p className="text-green-500 font-extrabold"> {user?.grade}</p></p>
-                       <p className='text-black flex gap-2 font-bold '>Phone Number: <p className="text-green-500 font-extrabold"> {user?.phoneNum}</p></p>
-                       <p className='text-black flex gap-2 font-bold '>Part: <p className="text-green-500 font-extrabold"> {user?.part}</p></p>
-                       <p className='text-black flex gap-2 font-bold '>Group: <p className="text-green-500 font-extrabold"> {user?.group}</p></p>
+                       <p className='text-black flex gap-2 font-bold '>Grade: <p className="text-green-500 font-extrabold"> {val.grade}</p></p>
+                       <p className='text-black flex gap-2 font-bold '>Phone Number: <p className="text-green-500 font-extrabold"> {val.phoneNum}</p></p>
+                       <p className='text-black flex gap-2 font-bold '>Part: <p className="text-green-500 font-extrabold"> {val.part}</p></p>
+                       <p className='text-black flex gap-2 font-bold '>Group: <p className="text-green-500 font-extrabold"> {val.group}</p></p>
                        {/* <h2 className='text-yellow-800 font-extrabold md:text-xl ' >{displayName}</h2> */}
                        <div className='w-full flex gap-4 justify-center mt-3 mb-3 items-center '>
                            <button onClick={()=> {
