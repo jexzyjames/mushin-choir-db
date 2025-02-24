@@ -22,7 +22,7 @@ const Register = () => {
   const { status, error } = useSelector((state) => state.auth);
   const handleSubmit = (event) => {
     event.preventDefault();
-    dispatch(registerUser({email,password,grade,displayName,group,age,part}))
+    dispatch(registerUser({email,password,grade,displayName,group,phoneNum,age,part}))
     .unwrap()
     .then(() => {
       toast.error('user registered successfully');
