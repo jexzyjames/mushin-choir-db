@@ -25,9 +25,8 @@ const Register = () => {
     dispatch(registerUser({email,password,grade,displayName,group,phoneNum,age,part}))
     .unwrap()
     .then(() => {
-      toast.error('user registered successfully');
+      toast.success('User registered successfully');
       setModal(true);
-      navigate("/login");
     })
     .catch((err) => {
       toast.error(err);
@@ -264,10 +263,9 @@ const Register = () => {
              <div className='w-full flex gap-4 justify-center mt-3 mb-3 items-center '>
                  <button onClick={()=> {
                     setModal(false);
-                    if(user){
+                  
 
                       navigate('/login')
-                    }
                  }} className='text-white w-full rounded-md shadow-md p-2 text-md flex gap-2 items-center bg-sky-500' ><FaCheck className="text-green-700 bg-white rounded-lg text-xl p-1" />Yes</button>
                  <button onClick={()=> {
                      setModal(false)

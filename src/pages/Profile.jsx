@@ -7,7 +7,8 @@ import { update } from "../redux/slices/authSlice";
 import { useSelector, useDispatch } from "react-redux";
 import {updateDoc, doc} from 'firebase/firestore'
 import { db } from "../config/firebaseconfig";
-import {FaList } from "react-icons/fa6";
+import {FaList, FaFlag } from "react-icons/fa6";
+import {FaCheck, FaTimes } from "react-icons/fa";
 import Modals from "../modals/Modals";
 const Profile = () => {
   const dispatch = useDispatch();
@@ -39,6 +40,7 @@ const Profile = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true)
+    setModal(true)
     console.log(user);
 
 
@@ -47,7 +49,6 @@ const Profile = () => {
   try{
     await updateDoc(doc(db, "users", id), val);
     setLoading(false)
-    toast.success('User details updated successfully');
     console.log(val)
   }
 
@@ -100,7 +101,7 @@ return (
                 className="text-black placeholder:text-slate-900  bg-white border w-full rounded-md p-1  mb-2 "
                 type="tel"
                 required
-                value={phoneNum}
+                value={val.phoneNum}
                 min='11'
                 max='14'
                 // pattern="/^-?\d+$/"
@@ -207,20 +208,23 @@ return (
          <Modals>
             {modal ? 
                        <div className='bg-white  absolute mx-auto text-black flex  flex-col w-full max-w-[300px]  text-center p-3  rounded-md shadow-md '>
+                                     <h1 className='md:text-2xl font-extrabold flex gap-2 text-sky-500 mb-2 uppercase ' > Confirm Details <FaFlag/></h1>
+                        
                        <p className='text-black flex gap-2 font-bold '>Name: <p className="text-green-500 font-extrabold"> {user?.name}</p></p>
                        <p className='text-black flex gap-2 font-bold '>Email: <p className="text-green-500 font-extrabold"> {user?.email}</p></p>
-                       <p className='text-black flex gap-2 font-bold '>Grade: <p className="text-green-500 font-extrabold"> {user?.grade}</p></p>
-                       <p className='text-black flex gap-2 font-bold '>Phone Number: <p className="text-green-500 font-extrabold"> {user?.phoneNum}</p></p>
-                       <p className='text-black flex gap-2 font-bold '>Part: <p className="text-green-500 font-extrabold"> {user?.part}</p></p>
-                       <p className='text-black flex gap-2 font-bold '>Group: <p className="text-green-500 font-extrabold"> {user?.group}</p></p>
+                       <p className='text-black flex gap-2 font-bold '>Grade: <p className="text-green-500 font-extrabold"> {val.grade}</p></p>
+                       <p className='text-black flex gap-2 font-bold '>Phone Number: <p className="text-green-500 font-extrabold"> {val.phoneNum}</p></p>
+                       <p className='text-black flex gap-2 font-bold '>Part: <p className="text-green-500 font-extrabold"> {val.part}</p></p>
+                       <p className='text-black flex gap-2 font-bold '>Group: <p className="text-green-500 font-extrabold"> {val.group}</p></p>
                        {/* <h2 className='text-yellow-800 font-extrabold md:text-xl ' >{displayName}</h2> */}
                        <div className='w-full flex gap-4 justify-center mt-3 mb-3 items-center '>
                            <button onClick={()=> {
                               setModal(false);
-                              if(user){
+                              setLoading(false)
+    toast.success('User details updated successfully');
           
                                 navigate('')
-                              }
+                              
                            }} className='text-white w-full rounded-md shadow-md p-2 text-md flex gap-2 items-center bg-sky-500' ><FaCheck className="text-green-700 bg-white rounded-lg text-xl p-1" />Yes</button>
                            <button onClick={()=> {
                                setModal(false)
