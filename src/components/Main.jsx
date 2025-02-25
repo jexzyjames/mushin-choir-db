@@ -5,7 +5,7 @@ import {Outlet} from 'react-router-dom'
 
 const Main = () => {
   return (
-    <div className=' bg-no-repeat opacity-105 bg-opacity-100 bg-cover bg-center bg-[url("/src/assets/prayer.jfif")]  text-white' >
+    <div className=' bg-no-repeat opacity-105 bg-opacity-100 bg-cover bg-center bg-[url("/src/assets/logo.jpg")]  text-white' >
       <Header />
       <div className=' '>
 

@@ -70,7 +70,7 @@ const Lessons = ({ title }) => {
               assignments.lessons.map((lessons, index) => (
                 <button
                   className={` ${
-                    index === page ? "bg-amber-700 ease-in-out" : "bg-transparent "
+                    index === page ? "bg-amber-700 ease-in-out" : " "
                   } bg-slate-900 rounded-md gap-3 
                   text-white p-2 border justify-center items-center justify-self-end  
                   flex hover:bg-sky-600`}

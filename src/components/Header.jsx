@@ -26,7 +26,7 @@ const Header = () => {
             setIsOpen(!isOpen);
             console.log(isOpen);
           }}
-          className="cursor-pointer h-[20px] w-[90px]"
+          className="cursor-pointer text-white h-[20px] w-[90px]"
         />
       </div>
       <nav className="md:flex  flex flex-col md:justify-center">
