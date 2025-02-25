@@ -7,6 +7,7 @@ const Assignments = ({ title }) => {
   const user = useSelector((state) => state.auth.user);
   const assignments = useSelector((state) => state.gradeContent.gradeData);
   const dispatch = useDispatch();
+  const [page, setPage] = useState(0)
 
   useEffect(() => {
     dispatch(getgradesLessons(user?.grade));
@@ -22,8 +23,10 @@ const Assignments = ({ title }) => {
           </h2>
         </div>
         {assignments?.assignments && assignments.assignments.length > 0 ? (
-          assignments.assignments.map((assignment) => (
-            <div key={assignment.id} className="bg-neutral-100 mb-2 p-2 md:p-4 rounded-xl shadow-lg ">
+          assignments.assignments.map((assignment, index) => (
+            <div key={assignment.id}  className={`${
+              index !== page && "hidden"
+            } bg-neutral-100 mb-2 p-2 md:p-4 rounded-xl shadow-lg`}>
               <h1 className="text-2xl md:w-full  text-amber-800 mt-3 font-extrabold text-left">
                 {assignment.title}
               </h1>
@@ -38,6 +41,24 @@ const Assignments = ({ title }) => {
             No Assignments available
           </h1>
         )}
+
+{assignments?.assignments && assignments.assignments.length > 0 ? (
+              assignments.assignments.map((_, index) => (
+                <button
+                  className={` ${
+                    index === page ? "bg-amber-700 ease-in-out" : "bg-transparent "
+                  } bg-slate-900 rounded-md gap-3 
+                  text-white p-2 border justify-center items-center justify-self-end  
+                  flex hover:bg-sky-600`}
+                  key={index}
+                  onClick={() => setPage(index)}
+                >
+                  {index}
+                </button>
+              ))
+            ) : (
+              <></>
+            )}
       </div>
     </div>
   );
