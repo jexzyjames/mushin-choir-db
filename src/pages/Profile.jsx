@@ -209,13 +209,10 @@ return (
          <Modals>
             {modal ? 
                        <div className='bg-white  absolute mx-auto text-black flex  flex-col w-full max-w-[300px]  text-center p-3  rounded-md shadow-md '>
-<<<<<<< HEAD
                                      <h1 className='md:text-2xl font-extrabold flex gap-2 text-sky-500 mb-2 uppercase ' > Confirm Details <FaFlag/></h1>
                         
                        <p className='text-black flex gap-2 font-bold '>Name: <p className="text-green-500 font-extrabold"> {user?.name}</p></p>
-=======
                        <p className='text-black flex gap-2 font-bold '>Name: <p className="text-green-500 font-extrabold"> {val.name}</p></p>
->>>>>>> 74685b1efdf973958a15a2ccb6ebb45888cae6d9
                        <p className='text-black flex gap-2 font-bold '>Email: <p className="text-green-500 font-extrabold"> {user?.email}</p></p>
                        <p className='text-black flex gap-2 font-bold '>Grade: <p className="text-green-500 font-extrabold"> {val.grade}</p></p>
                        <p className='text-black flex gap-2 font-bold '>Phone Number: <p className="text-green-500 font-extrabold"> {val.phoneNum}</p></p>
