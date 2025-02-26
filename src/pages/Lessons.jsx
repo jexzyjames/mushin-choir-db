@@ -52,7 +52,8 @@ const Lessons = ({ title }) => {
                   </h1>
 
                
-                  <p className="mb-3 text-[13px]  md:w-full md:text-md font-bold  " dangerouslySetInnerHTML={{ __html: lessons.content.replace(/\n/g, "<br>") }} />
+                  <p className="mb-3 text-[13px]  md:w-full md:text-md   " dangerouslySetInnerHTML={{ __html: lessons.content.replace(/\n/g, "<br>") }} />
+                  {/* <pre style={{whiteSpace: 'pre-line'}}>{lessons.content}</pre> */}
                 </div>
               ))
             ) : (

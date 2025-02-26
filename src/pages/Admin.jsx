@@ -88,6 +88,7 @@ function AdminPanel() {
             onChange={(e) => setContent(e.target.value)}
             placeholder="Enter content"
             required
+            rows={10}
           />
         <br />
         <button className='text-white p-1 cursor-pointer  hover:bg-sky-400 bg-sky-500' type="submit">Post {contentType === 'assignment' ? 'Assignment' : 'Lesson'}</button>
