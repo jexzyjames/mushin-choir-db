@@ -31,9 +31,9 @@ const Assignments = ({ title }) => {
                 {assignment.title}
               </h1>
 
-              <p style={{ whiteSpace: "pre-line" }} className="mb-3 text-[13px]  md:w-full md:text-md font-bold  ">
-               <pre>{assignment.content}</pre> 
-              </p>
+        
+              <p className="mb-3 text-[13px]  md:w-full md:text-md font-bold  " dangerouslySetInnerHTML={{ __html: assignment.content.replace(/\n/g, "<br>") }} />
+
             </div>
           ))
         ) : (
@@ -55,6 +55,9 @@ const Assignments = ({ title }) => {
                 >
                   {index}
                 </button>
+
+              
+                  
               ))
             ) : (
               <></>
