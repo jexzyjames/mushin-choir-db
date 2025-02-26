@@ -10,16 +10,12 @@ const Lessons = ({ title }) => {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(0);
   const totalPage = 2;
-  const nextPage = () => {
-    if (page + 1 <= totalPage - 1) {
-      setPage((next) => next + 1);
-    }
-  };
-  const prevPage = () => {
-    if (page - 1 >= 0) {
-      setPage((next) => next - 1);
-    }
-  };
+  // const nextPage = () => {
+  //   if (page + 1 <= totalPage - 1) {
+  //     setPage((next) => next + 1);
+  //   }
+  // };
+  //               
   const getGradeLesson = async () => {
     setLoading(false);
     dispatch(getgradesLessons(user?.grade));
@@ -55,8 +51,8 @@ const Lessons = ({ title }) => {
                     {lessons.title}
                   </h1>
 
-                  <p className="mb-3 text-[13px]  md:w-full md:text-md font-bold  ">
-                    {lessons.content}
+                  <p style={{ whiteSpace: "pre-line" }} className="mb-3 text-[13px]  md:w-full md:text-md font-bold  ">
+                    <pre>{lessons.content}</pre>
                   </p>
                 </div>
               ))
