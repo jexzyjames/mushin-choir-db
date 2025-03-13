@@ -48,7 +48,7 @@ export const loginUser = createAsyncThunk(
 export const registerUser = createAsyncThunk(
   "auth/registerUser",
   async (
-    { email, password, group, part, phoneNum, age, displayName, grade, image },
+    { email, password, group, part, phoneNum, age, displayName, grade, imageUrl },
     thunkAPI
   ) => {
     try {
@@ -66,6 +66,7 @@ export const registerUser = createAsyncThunk(
         grade: grade, // e.g., "Grade1"
         email: userCredential.user.email,
         group: group,
+        imageUrl: imageUrl,
         age: age,
         number: phoneNum,
         part: part,

@@ -5,11 +5,12 @@ import { toast, ToastContainer } from "react-toastify";
 import { registerUser } from "../redux/slices/authSlice";
 import { update } from "../redux/slices/authSlice";
 import { useSelector, useDispatch } from "react-redux";
-import {updateDoc, doc} from 'firebase/firestore'
+import {updateDoc,getDoc, doc} from 'firebase/firestore'
 import { db } from "../config/firebaseconfig";
 import {FaList, FaFlag } from "react-icons/fa6";
 import {FaCheck, FaTimes } from "react-icons/fa";
 import Modals from "../modals/Modals";
+import ScrollProgress from "../utils/ScollProgress";
 const Profile = () => {
   const dispatch = useDispatch();
   // const[modal,setModal]= useState(false)
@@ -18,6 +19,8 @@ const Profile = () => {
   const navigate = useNavigate();
   const[displayName] = useState(user.name)
   const[grade] = useState(user.grade)
+  const[image, setImageUrl] = useState(user.imageUrl)
+  const[newImage, setNewImage] = useState('')
   const [group ] = useState(user.group);
   const [phoneNum] = useState(user.number);
  const [part] = useState(user.part);
@@ -28,63 +31,114 @@ const Profile = () => {
   const [val, setVal] = useState({
     grade: grade,
     part: part,
+    imageUrl:'',
     name: displayName,
     phoneNum:phoneNum,
     group: group,
 
   })
   useEffect(()=>{
-    handleSubmit()
-  }, [modal])
-  const { status, error } = useSelector((state) => state.auth);
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setModal(true)
-    setLoading(true)
-    setModal(true)
-    console.log(user);
+    // handleSubmit()
+  }, [user,modal])
+  const handleImageUpload = async (file) => {
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "images");
+
+    try {
+        const res = await fetch("https://api.cloudinary.com/v1_1/dpd7w91aa/image/upload", {
+            method: "POST",
+            body: formData,
+        });
+
+        const data = await res.json();
+        if (data.secure_url) {
+            // ✅ Update state with Cloudinary URL
+            setVal((prev) => ({ ...prev, imageUrl: data.secure_url }));
+            console.log("Image uploaded:", data.secure_url);
+        }
+    } catch (error) {
+        console.error("Upload error:", error);
+    }
+};
 
 
-    console.log(id)
+
+  const handleSubmit = async () => {
     
-  try{
-    await updateDoc(doc(db, "users", id), val);
+    console.log(user); 
+    try{
+      setModal(true)
+      setLoading(true)
+    handleImageUpload()
+    await updateDoc(doc(db,'users', id), {...val})
     setLoading(false)
     console.log(val)
   }
 
   catch(error) {
+    console.error("Error uploading image:", error);
+    setLoading(false);
     toast.error(error);
     console.error(error);
   }
-setLoading(false)
  
 
 
   }
  
 return (
-    <div className='w-full'>
+    <div className='w-full fades'>
+      <ScrollProgress/>
               <div className="flex bg-white mb-1 shadow-lg rounded-xl p-2  gap-1 items-center">
                 <FaList />
+                
                 <h2 className="font-mono font-bold ">PROFILE {user.grade}</h2>
               </div>
        
         <form
-          onSubmit={handleSubmit}
+          onSubmit={(e)=>{
+            e.preventDefault();
+    console.log(user); 
+
+            handleSubmit();
+
+          }}
           className=" p-2  w-full  flex flex-col-reverse  gap-6  m-auto md:grid    "
         >
          
 
           {/* data fields e.g(name, email ...) */}
-
+          
           <div className=" text-sm  p-[1rem]   md:py-2 rounded-xl bg-white  shadow-md md:grid ">
             <div className="w-[100%]   gap-[9px]  md:grid md:grid-cols-2">
 
-            <h1 className="font-bold col-span-2 mb-3 text-left text-3xl text-orange-300">
+            <div className="font-bold col-span-2 mb-3 text-left text-3xl text-orange-300">
               UPDATE PROFILE
-            </h1>
-
+              <img
+                className=" mt-4 cursor-pointer rounded-[200px] w-18 h-18 bg-cover bg-center bg-slate-950  border-green-300 p-1  "
+                src={user?.imageUrl || regImg}
+                alt="user"
+              />
+            </div>
+            <div>
+              <h1 className= "  text-black mt-2 text-md mb-1">Upload image</h1>
+              <input
+                className="disabled:bg-slate-100 disabled:cursor-not-allowed disabled:border-0 disabled:text-slate-600 text-black placeholder:text-slate-900  bg-white border w-full rounded-md p-1  mb-2 "
+                type="file"
+                // disabled
+                onChange={(e)=> handleImageUpload(e.target.files[0]) }
+                placeholder="Chukwuma Ciroma"
+              />
+            </div>
+            {/* <img
+                className=" cursor-pointer rounded-[200px] w-18 h-18 bg-cover bg-center bg-slate-950  border-green-300 p-1  "
+                src={val?.imageUrl}
+                onClick={() => setOpen(!open)}
+                alt="user"
+              /> */}
             <div>
               <h1 className= "  text-black mt-2 text-md mb-1">Name</h1>
               <input

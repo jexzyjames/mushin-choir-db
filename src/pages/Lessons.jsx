@@ -28,7 +28,7 @@ const Lessons = ({ title }) => {
   return (
     <>
       {loading ? (
-        <div className="text-center text-xl">loading ...</div>
+        <div className="text-center fades text-xl">loading ...</div>
       ) : (
         <div className=" h-full">
           <div className=" ">
@@ -44,7 +44,7 @@ const Lessons = ({ title }) => {
                 <div
                   key={lessons.id}
                   className={`${
-                    index !== page && "hidden"
+                    index !== page && "hidden" 
                   } bg-neutral-100 mb-2 p-2 md:p-4 rounded-xl shadow-lg`}
                 >
                   <h1 className="text-2xl md:w-full  text-amber-800 mt-3 font-extrabold text-left">

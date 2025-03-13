@@ -65,11 +65,37 @@ const App = () => {
           <Route element={<Main />}>
             <Route path="/" element={<Home />} />
             <Route path="community" element={<Community />} />
+            
             <Route path="about" element={<About />} />
             <Route path="contact" element={<Contact />} />
           </Route>
+          
           <Route path="/reg" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          <Route element={<Hero />}>
+              <Route
+                path="lessons"
+                element={<Lessons title={names[1].title} />}
+              />
+              <Route
+                path="dash"
+                index
+                element={<Dashboard title={names[1].title} />}
+              />
+              <Route
+                path="assignment"
+                element={<Assignments title={names[2].title} />}
+              />
+              <Route
+                path="profile/:id"
+                element={<Profile title={names[3].title} />}
+              />
+
+              <Route
+                path="logout"
+                element={<Logout title={names[3].title} />}
+              />
+            </Route>
           {user ? (
             <Route path="/admin" element={<AdminPanel />} />
           ) : (
@@ -179,7 +205,7 @@ const App = () => {
                     </Link>
                     <Link
                       className="bg-sky-400 text-white p-2 rounded-md cursor-pointer"
-                      to="/login"
+                      to="dash"
                     >
                       Login
                     </Link>

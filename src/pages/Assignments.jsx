@@ -15,7 +15,7 @@ const Assignments = ({ title }) => {
 
   return (
     <div>
-      <div className="w-[100%] ">
+      <div className="w-[100%]fades ">
         <div className="flex bg-white mb-1 shadow-lg rounded-xl p-2  gap-1 items-center">
           <FaBook />
           <h2 className="font-mono font-bold ">

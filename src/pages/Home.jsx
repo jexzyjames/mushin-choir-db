@@ -2,13 +2,17 @@ import React from 'react'
 import bg from '../assets/logo.jpg'
 import bgImage from '../assets/logo-2.png'
 import bgImages from '../assets/ass-1.svg'
+import Community from '../components/Community'
+import About from '../components/About'
+import Contact from '../components/Contact'
+import ScrollProgress from '../utils/ScollProgress'
 const Home = () => {
   return (
-    <div className='h-screen  flex flex-col text-center items-center justify-center w-full' >
-
+    <div className=' fades flex flex-col text-center items-center justify-center w-full' >
+    <ScrollProgress/>
     <div
     // style={ { backgroundImage: `url(${bgImages})`, backgroundSize: 'cover', backgroundPosition:'center', backgroundRepeat: 'no-repeat' }  }
-    className="   w-full flex-col m-auto h-screen flex items-center justify-center"
+    className="  w-full flex-col m-auto h-screen flex items-center justify-center"
     >
         <h1 className='text-5xl font-bold text-center text-white'>Mushin Youth  Choir</h1>
 
@@ -16,6 +20,10 @@ const Home = () => {
 
 
     </div>
+
+    <Community/>
+    <About/>     
+    <Contact/>         
 
     </div>
 

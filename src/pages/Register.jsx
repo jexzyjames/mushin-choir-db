@@ -1,41 +1,63 @@
 import React, { useState,useRef, useEffect } from "react";
-import regImg from "../assets/reg-img.png";
 import { useNavigate, Link } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { registerUser } from "../redux/slices/authSlice";
-import { useSelector, useDispatch } from "react-redux";
+import {  useDispatch } from "react-redux";
 import { FaEye,FaEyeSlash, FaFlag } from "react-icons/fa6";
-import { FaTimes, FaMarker,FaCheck  } from "react-icons/fa";
-import { createUser } from "../redux/slices/userSlice";
+import { FaTimes, FaCheck  } from "react-icons/fa";
 import Modals from "../modals/Modals";
-import { TbRubberStampOff } from "react-icons/tb";
 const Register = () => {
   const dispatch = useDispatch();
+    const[loading , setLoading] = useState(false)
+  
   const passwordRef = useRef(null);
   const lengthRef = useRef(0);
   const phoneRef = useRef(0);
   const[passRef, setPassRef] = useState('password');
   const navigate = useNavigate();
   const [modal, setModal] = useState(false)
-
+  const[ imageUrl, setImageUrl ] = useState('');
   useEffect(()=>{},[modal])
-  const { status, error } = useSelector((state) => state.auth);
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    dispatch(registerUser({email,password,grade,displayName,group,phoneNum,age,part}))
-    .unwrap()
-    .then(() => {
-      toast.success('User registered successfully');
-      setModal(true);
-    })
-    .catch((err) => {
-      toast.error(err);
-      console.error('Login failed:', err)
+    try {
+        setLoading(true);
 
-    });
-    console.log({email, password, grade, displayName, group, district, age, part, image});
+        // Upload image to Cloudinary
+        const formData = new FormData();
+        formData.append("file", image);
+        formData.append("upload_preset", "images");
 
-  };
+        const res = await fetch("https://api.cloudinary.com/v1_1/dpd7w91aa/image/upload", {
+            method: "POST",
+            body: formData,
+        });
+
+        const data = await res.json();
+        setImageUrl(data.secure_url); // ✅ Save URL in state
+        console.log("Image URL:", data.secure_url);
+
+        // ✅ Wait for image URL to be set before dispatching
+        dispatch(registerUser({ email, password, grade, displayName, group, imageUrl:data.secure_url, phoneNum, age, part }))
+            .unwrap()
+            .then(() => {
+                toast.success("User registered successfully");
+                setLoading(false);
+                setModal(true);
+            })
+            .catch((err) => {
+                toast.error(err);
+                console.error("Registration failed:", err);
+                setLoading(false);
+            });
+
+    } catch (error) {
+        console.error("Error uploading image:", error);
+        setLoading(false);
+    }
+    console.log("Image URL:", imageUrl);
+};
+
 
  
 
@@ -52,7 +74,7 @@ const Register = () => {
   const [part, setPart] = useState('');
   const [image, setImage] = useState('');
   return (
-    <div className=''>
+    <div className='fades'>
        
         <form
           onSubmit={(e) => handleSubmit(e)}
@@ -166,6 +188,14 @@ const Register = () => {
             </div>
 
             <div>
+                <input 
+                onChange={(e)=> setImage(e.target.files[0])  }
+                 className="text-black placeholder:text-slate-900  bg-white border w-full rounded-md p-1  mb-2 "
+                 type="file" />
+                 
+            </div>
+
+            <div>
               <h1 className="text-black text-md mb-1">Parts</h1>
               <select
                 value={part}
@@ -238,7 +268,8 @@ const Register = () => {
             <input
               className="cursor-pointer  col-span-2 bg-[#ff2d1c] hover:bg-slate-900 text-white border rounded-md p-1 w-full mt-2 "
               type="submit"
-              value="Submit"
+              value={loading ? 'loading' : 'Submit'}
+
             />
       <ToastContainer/>
       </div>

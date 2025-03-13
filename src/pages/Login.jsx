@@ -59,7 +59,7 @@ useEffect(()=>{
         console.log(values);
       };
   return (
-    <div className=''>
+    <div className='fades'>
 <form onSubmit={(e)=> handleLogin(e)} className=" flex  justify-center items-center place-items-center p-3  m-auto md:max-w-[600px]    ">
           {/* <div className="p-2 md:overflow-hidden hidden m-auto  rounded-xl bg-white  shadow-md">
             <img
