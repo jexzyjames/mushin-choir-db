@@ -14,9 +14,9 @@ const Home = () => {
     // style={ { backgroundImage: `url(${bgImages})`, backgroundSize: 'cover', backgroundPosition:'center', backgroundRepeat: 'no-repeat' }  }
     className="  w-full flex-col m-auto h-screen flex items-center justify-center"
     >
-        <h1 className='text-5xl font-bold text-center text-white'>Mushin Youth  Choir</h1>
+        {/* <h1 className='text-5xl font-bold text-center text-white'>Mushin Youth  Choir</h1> */}
 
-        <h2 className='text-2xl text-center font-bold text-white'>Welcome to Mushin Youth Choir</h2>
+        {/* <h2 className='text-2xl text-center font-bold text-white'>Welcome to Mushin Youth Choir</h2> */}
 
 
     </div>

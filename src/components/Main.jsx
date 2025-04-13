@@ -6,7 +6,7 @@ import CircularScrollProgress from "../utils/CircularScrollProgress";
 
 const Main = () => {
   return (
-    <div className=' bg-no-repeat opacity-105 h-screen bg-opacity-100 bg-cover bg-center bg-[url("/src/assets/logo.jpg")]  ' >
+    <div className='  main bg-no-repeat opacity-105 h-screen bg-opacity-100 bg-cover bg-center   ' >
       <Header />
       <div className=' '>
 
