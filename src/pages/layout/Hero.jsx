@@ -218,7 +218,7 @@ const Hero = () => {
               </p>
               <p className="hidden md:block ">Profile</p>
             </NavLink>
-            {user && (
+            {!user && (
               <NavLink
                 to="logout"
                 className="  flex gap-3 items-center font-extrabold text-black text-center md:w-[100%]  p-2 cursor-pointer"

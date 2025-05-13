@@ -16,7 +16,7 @@ const Logout = () => {
     {modal ? 
      <div className='bg-white  absolute mx-auto text-black flex  flex-col  text-center p-3  rounded-md shadow-md '>
      <h1 className='md:text-xl mb-2 uppercase ' >Are you sure you want to log out</h1>
-     <h2 className='text-yellow-800 font-extrabold md:text-xl ' >{user.name}</h2>
+     <h2 className='text-yellow-800 font-extrabold md:text-xl ' >{user?.name}</h2>
      <div className='w-full flex gap-4 justify-center mt-3 mb-3 items-center '>
          <button onClick={()=> {
             setModal(false)

@@ -18,7 +18,7 @@ const [values, setValues] = useState({
     password: "",
   });
   const[loading , setLoading] = useState(false)
- const passwordRef = useRef(null);
+  const passwordRef = useRef(null);
   const[passRef, setPassRef] = useState('password');
 useEffect(()=>{
 
@@ -48,19 +48,16 @@ useEffect(()=>{
     )
       .catch((err) => 
       {
-        toast.error(err ,'Login failed', {
-            position:'top-right'
-        } )
-        console.error('Login failed:', err)
+        toast.error(err)
+        console.log( err)
         setLoading(false)
       }
 
     );
-        console.log(values);
       };
   return (
     <div className='fades'>
-<form onSubmit={(e)=> handleLogin(e)} className=" flex  justify-center items-center place-items-center p-3  m-auto md:max-w-[600px]    ">
+<form onSubmit={(e)=> handleLogin(e)} className=" flex  justify-center items-center place-items-center p-3 md:h-screen  m-auto md:max-w-[600px]    ">
           {/* <div className="p-2 md:overflow-hidden hidden m-auto  rounded-xl bg-white  shadow-md">
             <img
               className="bg-center md:w-[70%] w-full bg-cover border-0 outline-none rounded-xl shadow-xl"
@@ -76,14 +73,14 @@ useEffect(()=>{
             <h1 className="font-semibold col-span-2 m-0 text-left md:text-xl text-md text-black">
               Input all fields correctly{" "}
             </h1>
-            <p className=" flex gap-1  text-left  text-slate-950">
+            <div className=" flex gap-1  text-left  text-slate-950">
               Don't have an account?  
 
               <p>
                 <Link className='text-blue-500 text-left' to="/reg">   Sign up
                 </Link> 
                 </p>{" "}
-            </p>
+            </div>
 
             <div>
               <h1 className="text-black text-md mb-2">Email</h1>

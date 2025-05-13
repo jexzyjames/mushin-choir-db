@@ -17,13 +17,13 @@ const Profile = () => {
   const {id} = useParams();
   const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
-  const[displayName] = useState(user.name)
-  const[grade] = useState(user.grade)
-  const[image, setImageUrl] = useState(user.imageUrl)
+  const[displayName] = useState(user?.name)
+  const[grade] = useState(user?.grade)
+  const[image, setImageUrl] = useState(user?.imageUrl)
   const[newImage, setNewImage] = useState('')
-  const [group ] = useState(user.group);
-  const [phoneNum] = useState(user.number);
- const [part] = useState(user.part);
+  const [group ] = useState(user?.group);
+  const [phoneNum] = useState(user?.number);
+ const [part] = useState(user?.part);
   const[loading, setLoading] = useState(false)
   const [modal, setModal] = useState(false)
  
@@ -95,7 +95,7 @@ return (
               <div className="flex bg-white mb-1 shadow-lg rounded-xl p-2  gap-1 items-center">
                 <FaList />
                 
-                <h2 className="font-mono font-bold ">PROFILE {user.grade}</h2>
+                <h2 className="font-mono font-bold ">PROFILE {user?.grade}</h2>
               </div>
        
         <form

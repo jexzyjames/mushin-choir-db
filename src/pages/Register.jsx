@@ -65,7 +65,7 @@ const Register = () => {
 
   const[displayName, setDisplayName] = useState('')
   const[email, setEmail] = useState('')
-  const[phoneNum, setPhoneNum] = useState(0)
+  const[phoneNum, setPhoneNum] = useState(null)
   const[password, setPassword] = useState('')
   const[grade, setGrade] = useState('')
   const [group, setGroup] = useState('');
@@ -127,12 +127,12 @@ const Register = () => {
                 onChange={(e)=>setPhoneNum(e.target.value)}
 
                 maxLength={12}
-                placeholder="01234567890"
+                placeholder="0123 456 7890"
               />
             </div>
             {
 
-                <p className='absolute hidden ' >{phoneNum.toString().length == phoneRef.current.maxLength && toast('PhoneNumber is more than 11')}</p>
+                <p className='absolute hidden ' >{ phoneNum !== null | 0 && phoneNum.toString().length == phoneRef.current.maxLength && toast('PhoneNumber is more than 11')}</p>
               }
            
             <div className="w-full">
