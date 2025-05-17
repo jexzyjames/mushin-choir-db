@@ -11,17 +11,33 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tool
 const Filter = () => {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
+  const [filteredLessons, setFilteredLessons] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState("All");
+  const [selectedLessons, setSelectedLessons] = useState("All");
   const [selectedPart, setSelectedPart] = useState("All");
   const [selectedGrade, setSelectedGrade] = useState("All");
+  const [lessons, setLesssons] = useState([]);
+  const [assignments, setAssignments] = useState([]);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "users"), (snapshot) => {
         const usersData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setUsers(usersData);
+
+        const dats = onSnapshot(collection(db, "lessons"), (snapshot) => {
+            const lessonsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setLesssons(lessonsData);
+        }
+        );
+        const dats2 = onSnapshot(collection(db, "assignments"), (snapshot) => {
+            const assignmentsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setAssignments(assignmentsData);
+        }
+        );
       });
   
       return () => unsubscribe(); 
+
   }, []);
 
   useEffect(() => {
@@ -49,6 +65,33 @@ const Filter = () => {
       }
     setFilteredUsers(filtered);
   };
+
+  const filterLessons = ()=>{
+    let filtered = lessons;
+    if(setSelectedGrade !== "All"){
+        filtered = filtered.filter(lesson => lesson.grade === selectedGrade);
+    }
+    if(selectedGrade == 'GRADE 1'){
+        filtered = filtered.filter(lesson => lesson.grade === 'GRADE 1');
+    }
+    if(selectedGrade == 'GRADE 2'){
+        filtered = filtered.filter(lesson => lesson.grade === 'GRADE 2');
+    }
+    if(selectedGrade == 'GRADE 3'){
+        filtered = filtered.filter(lesson => lesson.grade === 'GRADE 3');
+    }
+    if(selectedGrade == 'GRADE 4'){
+        filtered = filtered.filter(lesson => lesson.grade === 'GRADE 4');
+    }
+    if(selectedGrade == 'GRADE 5'){
+        filtered = filtered.filter(lesson => lesson.grade === 'GRADE 5');
+    }
+    if(selectedGrade == 'PRELIM'){
+        filtered = filtered.filter(lesson => lesson.grade === 'PRELIM');
+    }
+    setFilteredLessons(filtered)
+
+  }
 
   // Count users per grade
   const gradeCounts = filteredUsers.reduce((acc, user) => {
@@ -114,6 +157,16 @@ const Filter = () => {
           <select className="border p-2 rounded" onChange={(e) => setSelectedGrade(e.target.value)} >
             <option value="All">All</option>
             {grades.map(grade => <option key={grade} value={grade}>{grade}</option>)}
+          </select>
+        </div>
+
+         <div>
+          <label className="block font-semibold">Select Lessons:</label>
+          <select className="border p-2 rounded" onChange={(e) => setSelectedLessons(e.target.value)}>
+            <option value="All">All</option>
+            {grades.map(grade => <option key={grade} value={grade}>{grade}</option>)}
+
+            {/* {[...new Set(grades.map(user => user.group))].map(group => <option key={group} value={group}>{group}</option>)} */}
           </select>
         </div>
       </div>
