@@ -16,19 +16,15 @@ const Filter = () => {
   const [selectedLessons, setSelectedLessons] = useState("All");
   const [selectedPart, setSelectedPart] = useState("All");
   const [selectedGrade, setSelectedGrade] = useState("All");
-  const [lessons, setLesssons] = useState([]);
+  let [lessons, setLesssons] = useState([]);
   const [assignments, setAssignments] = useState([]);
-
+  let[grade,setGrade] = useState([])
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "users"), (snapshot) => {
         const usersData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setUsers(usersData);
 
-        const dats = onSnapshot(collection(db, "lessons"), (snapshot) => {
-            const lessonsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setLesssons(lessonsData);
-        }
-        );
+       
         const dats2 = onSnapshot(collection(db, "assignments"), (snapshot) => {
             const assignmentsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             setAssignments(assignmentsData);
@@ -40,10 +36,32 @@ const Filter = () => {
 
   }, []);
 
-  useEffect(() => {
+  useEffect(()=>{
+   const unsubscribe = onSnapshot(collection(db, "grades"), (snapshot) => {
+    const gradesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const allLessons = gradesData.flatMap((grade) => 
+      (grade.lessons || []).map(lesson => ({ ...lesson, grade: grade.id })) // include grade id for filtering
+    );
+    setLesssons(allLessons); // ✅ flatten and attach grade
+  });
+
+  return () => unsubscribe();
+
+  },[])
+ const filterLessons = () => {
+  let filtered = lessons;
+
+  if (selectedGrade !== "All") {
+    filtered = lessons.filter(lesson => lesson.grade === selectedGrade);
+  }
+
+  setFilteredLessons(filtered);
+};
+
+  useEffect(() => { 
     filterUsers();
     filterLessons()
-  }, [selectedGroup, selectedLessons,lessons, selectedGrade,selectedPart, users]);
+  }, [selectedGroup, selectedLessons,lessons,grade, selectedGrade,selectedPart, users]);
 
   const filterUsers = () => {
     let filtered = users;
@@ -67,32 +85,8 @@ const Filter = () => {
     setFilteredUsers(filtered);
   };
 
-  const filterLessons = ()=>{
-    let filtered = lessons;
-    if(setSelectedGrade !== "All"){
-        filtered = filtered.filter(lesson => lesson.grade === selectedGrade);
-    }
-    if(selectedGrade == 'GRADE 1'){
-        filtered = filtered.filter(lesson => lesson.grade === 'GRADE 1');
-    }
-    if(selectedGrade == 'GRADE 2'){
-        filtered = filtered.filter(lesson => lesson.grade === 'GRADE 2');
-    }
-    if(selectedGrade == 'GRADE 3'){
-        filtered = filtered.filter(lesson => lesson.grade === 'GRADE 3');
-    }
-    if(selectedGrade == 'GRADE 4'){
-        filtered = filtered.filter(lesson => lesson.grade === 'GRADE 4');
-    }
-    if(selectedGrade == 'GRADE 5'){
-        filtered = filtered.filter(lesson => lesson.grade === 'GRADE 5');
-    }
-    if(selectedGrade == 'PRELIM'){
-        filtered = filtered.filter(lesson => lesson.grade === 'PRELIM');
-    }
-    setFilteredLessons(filtered)
+ 
 
-  }
 
   // Count users per grade
   const gradeCounts = filteredUsers.reduce((acc, user) => {
@@ -153,23 +147,25 @@ const Filter = () => {
             {parts.map(part => <option key={part} value={part}>{part}</option>)}
           </select>
         </div>
-        <div>
+
+          <div>
           <label className="block font-semibold">Select Grade:</label>
+          <select className="border p-2 rounded" onChange={(e) => setSelectedPart(e.target.value)} >
+            <option value="All">All</option>
+            {grades.map(part => <option key={part} value={part}>{part}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="block font-semibold">Select Lessons By Grade:</label>
           <select className="border p-2 rounded" onChange={(e) => setSelectedGrade(e.target.value)} >
             <option value="All">All</option>
-            {grades.map(grade => <option key={grade} value={grade}>{grade}</option>)}
+             {[...new Set(lessons.map(lesson => lesson.grade))].map((grade) => (
+      <option key={grade} value={grade}>{grade}</option>
+    ))}
           </select>
         </div>
 
-         <div>
-          <label className="block font-semibold">Select Lessons:</label>
-          <select className="border p-2 rounded" onChange={(e) => setSelectedLessons(e.target.value)}>
-            <option value="All">All</option>
-            {grades.map(grade => <option key={grade} value={grade}>{grade}</option>)}
-
-            {/* {[...new Set(grades.map(user => user.group))].map(group => <option key={group} value={group}>{group}</option>)} */}
-          </select>
-        </div>
+        
       </div>
       {/* Export Button */}
       <button onClick={exportCSV} className="bg-blue-500 text-white px-4 py-2 rounded mb-4">Export CSV</button>
@@ -179,6 +175,12 @@ const Filter = () => {
         <h3 className="text-lg font-semibold">Total Users in Selected Filter:</h3>
         <p><strong>{filteredUsers.length} Users</strong></p>
       </div>
+
+            <div className="bg-white p-4 shadow rounded mb-4">
+        <h3 className="text-lg font-semibold">Total Lessons in Selected Filter:</h3>
+        <p><strong>{filteredLessons.length} Users</strong></p>
+      </div>
+    
  {/*  Chart */}
  <div className="flex gap-4">
         <div className="w-1/2 bg-white p-4 shadow rounded">
@@ -190,6 +192,8 @@ const Filter = () => {
           <Pie data={pieChartData} />
         </div>
       </div>
+
+     
       {/* User Table */}
       <div className="bg-white p-4 shadow rounded mb-4">
         <h3 className="text-lg font-semibold mb-2">Users & Grades</h3>
@@ -220,6 +224,33 @@ const Filter = () => {
           </tbody>
         </table>
       </div>
+
+     
+
+      {filteredLessons.length > 0 && (
+        
+        <div className="bg-white p-4 shadow rounded mb-4">
+          <h3 className="text-lg font-semibold mb-2">Filtered Lessons</h3>
+          <table className="w-full border-collapse border">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="border p-2">Title</th>
+                <th className="border p-2">Content</th>
+                <th className="border p-2">Grade</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredLessons.map(lesson => (
+                <tr key={lesson.id} className="border">
+                  <td className="border text-[12px] p-2">{lesson.title}</td>
+                  <td className="border text-[12px] p-2">{lesson.content}</td>
+                  <td className="border p-1 text-[11px]">{lesson.grade}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
      
     </div>

@@ -43,7 +43,7 @@ const AdminLayout = () => {
     useEffect(() => {
         if(!user){
             
-            Navigate('/login')
+            navigate('/login')
         } 
 
     },{user});
@@ -209,7 +209,7 @@ const AdminLayout = () => {
                     </NavLink>
 
                     <NavLink
-                      to="assignment"
+                      to="admin"
                       // onClick={() => sethead("ASSIGNMENTS")}
                       className="font-extrabold flex  gap-3 items-center   text-center md:w-[100%] p-2 cursor-pointer"
                     >
@@ -246,7 +246,7 @@ const AdminLayout = () => {
                     <div className="block md:flex  w-full font-bold md:justify-between p-1">
                       <p>
                         Welcome to ADMIN Dashboard,{" "}
-                        <b className="text-yellow-500">{name} </b> !
+                        <b className="text-yellow-500">{name} </b>!
                       </p>
         
                       

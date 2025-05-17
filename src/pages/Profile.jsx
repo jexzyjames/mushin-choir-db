@@ -118,7 +118,7 @@ return (
             <div className="font-bold col-span-2 mb-3 text-left text-3xl text-orange-300">
               UPDATE PROFILE
               <img
-                className=" mt-4 cursor-pointer rounded-[200px] w-18 h-18 bg-cover bg-center bg-slate-950  border-green-300 p-1  "
+                className=" mt-4 cursor-pointer rounded-[200px] w-[150px] h-[150px] bg-cover bg-center bg-slate-950  border-green-300 p-1  "
                 src={user?.imageUrl || regImg}
                 alt="user"
               />

@@ -7,7 +7,7 @@ const Breadcrumbs = () => {
   const newPath = segments[1]
     const { user } = useSelector((state) => state.auth);
   
-  console.log(newPath)
+  // console.log(newPath)
 
   return (
     <nav className="text-gray-600 text-sm my-4">
