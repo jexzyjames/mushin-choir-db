@@ -42,7 +42,8 @@ const Filter = () => {
 
   useEffect(() => {
     filterUsers();
-  }, [selectedGroup, selectedGrade,selectedPart, users]);
+    filterLessons()
+  }, [selectedGroup, selectedLessons,lessons, selectedGrade,selectedPart, users]);
 
   const filterUsers = () => {
     let filtered = users;
