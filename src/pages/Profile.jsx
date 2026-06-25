@@ -62,7 +62,7 @@ const Profile = () => {
     } catch (error) {
         console.error("Upload error:", error);
     }
-},[];
+};
 
 
 
