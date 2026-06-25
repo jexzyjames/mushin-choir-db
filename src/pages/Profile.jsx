@@ -31,7 +31,7 @@ const Profile = () => {
   const [val, setVal] = useState({
     grade: grade,
     part: part,
-    imageUrl:'',
+    imageUrl:image,
     name: displayName,
     phoneNum:phoneNum,
     group: group,
@@ -62,7 +62,7 @@ const Profile = () => {
     } catch (error) {
         console.error("Upload error:", error);
     }
-};
+},[];
 
 
 
