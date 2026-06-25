@@ -36,6 +36,13 @@ const Dashboard = ({ title }) => {
             
             {/*  */}
           </div>
+          { user?.email === "james@gmail.com" && <div onClick={()=> {
+      navigate(`/admin`)}} className="bg-fuchsia-500 flex flex-row-reverse items-center gap-2  justify-between text-white rounded-md p-2 shadow-md ">
+            <h1 className='justify-start text-left items-start font-extrabold' >ADMIN</h1>
+            <FaUser className="w-[40px] p-2 items-center flex justify-center h-[40px] text-red-500  bg-slate-50 rounded-[200px]"/>
+            
+            {/*  */}
+          </div>}
          
         </div>
        
