@@ -1,189 +1,101 @@
-import React, { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   HashRouter as Router,
-  Routes,
   Link,
-  Route,
   Navigate,
   Outlet,
+  Route,
+  Routes,
 } from "react-router-dom";
-// import { Main } from './components/Main'
-import Community from "./components/Community";
+import { useDispatch, useSelector } from "react-redux";
 import Main from "./components/Main";
-import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
-import Lessons from "./pages/Lessons";
-import Profile from "./pages/Profile";
+import AdminPanel from "./pages/Admin";
 import Assignments from "./pages/Assignments";
+import Dashboard from "./pages/Dashboard";
+import Home from "./pages/Home";
+import Lessons from "./pages/Lessons";
 import Login from "./pages/Login";
 import Logout from "./pages/Logout";
-import { useSelector, useDispatch } from "react-redux";
-import { listenForAuthChanges } from "../src/redux/slices/authSlice";
-import AdminPanel from "./pages/Admin";
-import Hero from "./pages/layout/Hero";
-import About from "./components/About";
-import Contact from "./components/Contact";
-import Home from "./pages/Home";
+import Profile from "./pages/Profile";
+import Register from "./pages/Register";
 import Filter from "./Testing/Filter";
 import AdminLayout from "./pages/layout/AdminLayout";
+import Hero from "./pages/layout/Hero";
+import { listenForAuthChanges } from "./redux/slices/authSlice";
+
+function RequireAuth() {
+  const { user, authReady } = useSelector((state) => state.auth);
+
+  if (!authReady) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#0B0704] text-[#D9C9A8]">
+        Checking your session…
+      </div>
+    );
+  }
+
+  return user ? <Outlet /> : <Navigate to="/login" replace />;
+}
+
+function NotFound() {
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-[#0B0704] px-5 text-center text-[#F5EBD8]">
+      <div className="max-w-lg">
+        <p className="font-sans text-xs uppercase tracking-[0.25em] text-[#C9A24B]">
+          Old Mushin Youth Choir
+        </p>
+        <h1 className="font-display mt-4 text-4xl font-semibold sm:text-5xl">
+          Page not found
+        </h1>
+        <p className="mt-4 text-sm leading-relaxed text-[#B9A685]">
+          The page may have moved, or the address may be incorrect.
+        </p>
+        <Link
+          className="mt-7 inline-flex border border-[#C9A24B] px-5 py-3 font-sans text-xs uppercase tracking-[0.18em] text-[#C9A24B] transition-colors hover:bg-[#C9A24B] hover:text-[#150B07]"
+          to="/"
+        >
+          Return home
+        </Link>
+      </div>
+    </main>
+  );
+}
+
 const App = () => {
-  const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
 
-  const names = [
-    {
-      title: "DASHBOARD",
-    },
-
-    {
-      title: "LESSONS",
-    },
-
-    {
-      title: "ASSIGNMENT",
-    },
-
-    {
-      title: "PROFILE",
-    },
-  ];
-  const ProtectedRoute = () => {
-    const user = useSelector((state) => state.auth.user);
-    if (!user) {
-      return <Navigate to="/login" replace />;
-    }
-    return <Outlet />;
-  };
-
   useEffect(() => {
-    dispatch(listenForAuthChanges());
-  }, [user]);
+    const unsubscribe = dispatch(listenForAuthChanges());
+    return unsubscribe;
+  }, [dispatch]);
 
   return (
-    <div>
-      <Router>
-        <Routes>
-          {/* <Header/> */}
-          <Route element={<Main />}>
-            <Route path="/" element={<Home />} />
-            <Route path="community" element={<Community />} />
-            
-            <Route path="about" element={<About />} />
-            <Route path="contact" element={<Contact />} />
-          </Route>
-          
-          <Route path="/reg" element={<Register />} />
-          <Route path="/login" element={<Login />} />
+    <Router>
+      <Routes>
+        <Route element={<Main />}>
+          <Route path="/" element={<Home />} />
+        </Route>
+        <Route path="/reg" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+
+        <Route element={<RequireAuth />}>
           <Route element={<Hero />}>
-              <Route
-                path="lessons"
-                element={<Lessons title={names[1].title} />}
-              />
-              <Route
-                path="dash"
-                index
-                element={<Dashboard title={names[1].title} />}
-              />
-              <Route
-                path="assignment"
-                element={<Assignments title={names[2].title} />}
-              />
-              <Route
-                path="profile/:id"
-                element={<Profile title={names[3].title} />}
-              />
+            <Route path="dash" element={<Dashboard />} />
+            <Route path="lessons" element={<Lessons />} />
+            <Route path="assignment" element={<Assignments />} />
+            <Route path="profile/:id" element={<Profile />} />
+            <Route path="logout" element={<Logout />} />
+          </Route>
 
-              <Route
-                path="logout"
-                element={<Logout title={names[3].title} />}
-              />
-            </Route>
-          
-            <Route element={<AdminLayout/>}>
+          <Route element={<AdminLayout />}>
+            <Route path="filter" element={<Filter />} />
+            <Route path="admin" element={<AdminPanel />} />
+          </Route>
+        </Route>
 
-              <Route  path="/admin" element={<AdminPanel />} />
-              <Route index path="/filter" element={<Filter />} />
-            </Route>
-          
-          
-          
-
-          {user ? (
-            <Route element={<Hero />}>
-              <Route
-                path="lessons"
-                element={<Lessons title={names[1].title} />}
-              />
-              <Route
-                path="dash"
-                index
-                element={<Dashboard title={names[1].title} />}
-              />
-              <Route
-                path="assignment"
-                element={<Assignments title={names[2].title} />}
-              />
-              <Route
-                path="profile/:id"
-                element={<Profile title={names[3].title} />}
-              />
-
-              <Route
-                path="logout"
-                element={<Logout title={names[3].title} />}
-              />
-            </Route>
-          ) : (
-            <Route
-              path="*"
-              element={
-                <div className="flex flex-col  h-screen m-auto justify-center items-center rounded-lg bg-white shadow-md ">
-                  <h1 className="text-3xl font-extrabold ">
-                    404 User Not Found
-                  </h1>
-                  <h1>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      className="w-6 h-6"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 9v2m0 4v2m0-6v2M2 7h16M7 17h7a2 2 0 002-2H7a2 2 0 00-2 2zm10 0h7a2 2 0 002-2h7a2 2 0 00-2 2z"
-                      />
-                    </svg>
-                    <h1 className='font-bold text-xl text-amber-700' >Oops! You're not Logged in.</h1>
-                  </h1>
-
-                  <div className=" shadow-md mt-3 bg-slate-300 rounded-lg p-3 flex flex-col md:flex-row gap-4  justify-center items-center">
-                    <h1>Please register or login to access this page</h1>
-                   <div className="flex gap-4 ">
-
-                    <Link
-                      className="bg-blue-400 p-2 text-white rounded-md cursor-pointer  "
-                      to="/reg"
-                    >
-                      Register
-                    </Link>
-                    <Link
-                      className="bg-sky-400 text-white p-2 rounded-md cursor-pointer"
-                      to="/login"
-                    >
-                      Login
-                    </Link>
-                   </div>
-                  </div>
-                </div>
-              }
-            />
-          )}
-        </Routes>
-      </Router>
-    </div>
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Router>
   );
 };
 

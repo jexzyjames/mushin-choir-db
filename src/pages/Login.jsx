@@ -1,137 +1,118 @@
-import React,{useState, useRef,useEffect} from 'react'
-import { loginUser } from '../redux/slices/authSlice'
-import { useDispatch, useSelector } from'react-redux'
-import regImg from '../assets/reg-img.png'
-import { toast, ToastContainer } from'react-toastify'
-import { useNavigate,Link } from 'react-router-dom'
-import { FaEye,FaEyeSlash } from "react-icons/fa6";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { FaEye, FaEyeSlash } from "react-icons/fa6";
+import { loginUser } from "../redux/slices/authSlice";
+
+const fieldClass =
+  "mt-2 w-full border border-[#C9A24B]/25 bg-[#0F0805] px-3 py-3 text-sm text-[#F5EBD8] outline-none transition-colors placeholder:text-[#7A6A4E] focus:border-[#C9A24B]";
+const labelClass =
+  "block font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#C9A24B]";
 
 const Login = () => {
-const [values, setValues] = useState({
-    name: "",
-    email: "",
-    age: 0,
-    number: "",
-    part: "",
-    grade: "",
-    group: "",
-    password: "",
-  });
-  const[loading , setLoading] = useState(false)
-  const passwordRef = useRef(null);
-  const[passRef, setPassRef] = useState('password');
-useEffect(()=>{
-
-},[loading])
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const[email, setEmail] = useState('')
-    const[password, setPassword] = useState('')
-  const { status, error } = useSelector((state) => state.auth);
-    const handleLogin = (event) => {
-        event.preventDefault();
-        setLoading(true)
-        // if(email.length <= 0 && password.length <= 0){
-        //     toast.error('Input email and password', {
-        //         position:'top-right'
-        //     } )
-        //     return;
-        // }
-        
-        dispatch(loginUser({email, password}))
-      .unwrap()
-      .then(() => {
-        toast.success('Logged in successfully' )
-        setLoading(false)
-          navigate('/dash');
-      }
-    )
-      .catch((err) => 
-      {
-        toast.error(err)
-        console.log( err)
-        setLoading(false)
-      }
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-    );
-      };
+  const handleLogin = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      await dispatch(loginUser({ email: email.trim(), password })).unwrap();
+      navigate("/dash", { replace: true });
+    } catch (loginError) {
+      setError(
+        typeof loginError === "string"
+          ? loginError
+          : "We could not sign you in. Check your details and try again."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className='fades'>
-<form onSubmit={(e)=> handleLogin(e)} className=" flex  justify-center items-center place-items-center p-3 md:h-screen  m-auto md:max-w-[600px]    ">
-          {/* <div className="p-2 md:overflow-hidden hidden m-auto  rounded-xl bg-white  shadow-md">
-            <img
-              className="bg-center md:w-[70%] w-full bg-cover border-0 outline-none rounded-xl shadow-xl"
-              src={regImg}
-              alt="reegister-image"
-            />
-          </div> */}
+    <main className="flex min-h-screen items-center justify-center bg-[#0B0704] px-4 py-10 text-[#F5EBD8]">
+      <section className="w-full max-w-md border border-[#C9A24B]/30 bg-[#150B07] p-6 shadow-2xl shadow-black/30 sm:p-9">
+        <Link
+          to="/"
+          className="font-sans text-[10px] uppercase tracking-[0.22em] text-[#C9A24B] hover:text-[#F5EBD8]"
+        >
+          Old Mushin Youth Choir
+        </Link>
+        <h1 className="font-display mt-5 text-3xl font-semibold sm:text-4xl">
+          Welcome back
+        </h1>
+        <p className="mt-2 text-sm text-[#B9A685]">
+          Sign in to open your choir member portal.
+        </p>
 
-          <div className="w-full  gap-[10px] flex flex-col   bg-white shadow-md p-[1.2rem] rounded-xl ">
-          <h1 className="font-bold  text-left text-3xl text-orange-300">
-              Login
-            </h1>
-            <h1 className="font-semibold col-span-2 m-0 text-left md:text-xl text-md text-black">
-              Input all fields correctly{" "}
-            </h1>
-            <div className=" flex gap-1  text-left  text-slate-950">
-              Don't have an account?  
-
-              <p>
-                <Link className='text-blue-500 text-left' to="/reg">   Sign up
-                </Link> 
-                </p>{" "}
-            </div>
-
-            <div>
-              <h1 className="text-black text-md mb-2">Email</h1>
-              <input
-                className="text-black  placeholder:text-gray-600 border w-full rounded-md p-2  "
-                type="email"
-                
-                value={email}
-                onChange={(e)=> setEmail(e.target.value)  }
-                placeholder="email@example.com"
-              />
-            </div>
-
-            <div className=' '>
-              <h1 className="text-black text-md mb-2">Password</h1>
-              <div className="flex w-full justify-center rounded-md border p-2 h-7 items-center ">
-              
-                            <input
-                              className="text-black outline-0 placeholder:text-slate-900 flex justify-center items-center  bg-white  w-full  rounded-md p-1  mb-2 "
-                              type={passRef}
-                              ref={passwordRef}
-                              value={password}
-                              onChange={(e)=> {
-                                setPassword(e.target.value)
-                               
-                             }
-                            }
-                            />
-                            <span className='cursor-pointer' onClick={()=>
-                            {
-                              setPassRef(passRef === 'password'? 'text' : 'password')
-                              passwordRef.current.type = passRef === 'password'? 'password' : 'text';
-                             
-                            }
-                             
-              
-                            } >{passRef === 'password' ? <FaEye/> : <FaEyeSlash className="cursor-pointer" /> }</span>
-                              </div>
-              </div>
-
-          <ToastContainer />
+        <form className="mt-8 space-y-5" onSubmit={handleLogin}>
+          <label className={labelClass}>
+            Email address
             <input
-              className="cursor-pointer mt-2 col-span-2 bg-[#ff2d1c] hover:bg-slate-900 text-white border rounded-md p-1 w-full mb-2 "
-              type="submit"
-              value={loading ? 'loading' : 'Log In'}
+              className={fieldClass}
+              type="email"
+              autoComplete="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder="you@example.com"
+              required
             />
-          </div>
-        </form>
-        
-    </div>
-  )
-}
+          </label>
 
-export default Login
+          <label className={labelClass}>
+            Password
+            <span className="relative mt-2 block">
+              <input
+                className={`${fieldClass} mt-0 pr-12`}
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                required
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-[#B9A685] hover:text-[#C9A24B]"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                onClick={() => setShowPassword((shown) => !shown)}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </span>
+          </label>
+
+          {error && (
+            <p className="border border-red-900/60 bg-[#1B0E08] px-4 py-3 text-sm text-red-200" role="alert">
+              {error}
+            </p>
+          )}
+
+          <button
+            className="w-full border border-[#C9A24B] bg-[#C9A24B] px-5 py-3 font-sans text-xs font-semibold uppercase tracking-[0.2em] text-[#150B07] transition-colors hover:bg-transparent hover:text-[#C9A24B] disabled:cursor-not-allowed disabled:opacity-60"
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? "Signing in…" : "Sign in"}
+          </button>
+        </form>
+
+        <p className="mt-6 text-center text-sm text-[#B9A685]">
+          New to the choir?{" "}
+          <Link className="text-[#C9A24B] underline-offset-4 hover:underline" to="/reg">
+            Create an account
+          </Link>
+        </p>
+      </section>
+    </main>
+  );
+};
+
+export default Login;

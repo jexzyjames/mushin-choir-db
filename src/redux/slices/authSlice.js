@@ -1,7 +1,6 @@
 // slices/authSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
-  getAuth,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   updateProfile,
@@ -11,26 +10,18 @@ import { auth, db } from "../../config/firebaseconfig";
 import { onAuthStateChanged } from "firebase/auth";
 import {
   doc,
-  getFirestore,
   setDoc,
   getDoc,
   updateDoc,
-  arrayUnion,
 } from "firebase/firestore";
 // Async thunk for logging in
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async ({ email, password }, thunkAPI) => {
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        getAuth(),
-        email,
-        password
-      );
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const uid = userCredential.user.uid;
-      const user = userCredential.user;
 
-      // Firebase Auth returns photoURL and displayName if set
       const userDoc = await getDoc(doc(db, "users", uid));
       if (userDoc.exists()) {
         const userData = userDoc.data();
@@ -52,18 +43,12 @@ export const registerUser = createAsyncThunk(
     thunkAPI
   ) => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        getAuth(),
-        email,
-        password
-      );
-      // Update the Firebase Auth profile with displayName and photoURL (profileImage)
-      await updateProfile(userCredential.user, displayName);
-      // In a a real app, you might also store the 'grade' in a Firestore user document.
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(userCredential.user, { displayName });
       const userData = {
         name: displayName,
         uid: userCredential.user.uid,
-        grade: grade, // e.g., "Grade1"
+        grade,
         email: userCredential.user.email,
         group: group,
         imageUrl: imageUrl,
@@ -113,7 +98,7 @@ async ({ id, userData }, thunkAPI) => {
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    user: null ||{} ,
+    user: null,
     name: "",
     grade: "",
     group: "",
@@ -121,28 +106,18 @@ const authSlice = createSlice({
     age: 0,
     status: "idle", // idle | loading | succeeded | failed
     error: null,
+    authReady: false,
   },
   reducers: {
     // You can add synchronous actions here if needed.
     setUser(state, action) {
       state.user = action.payload;
+      state.authReady = true;
     },
     clearUser(state) {
       state.user = null;
+      state.authReady = true;
     },
-    update(state, action){
-      async ({ id, userData }, thunkAPI) => {
-        try {
-          // Update the document with the new data
-          await updateDoc(doc(db, 'users', id), userData);
-          // Return the updated data (including the user ID)
-          return { id, ...userData };
-        } catch (error) {
-          return thunkAPI.rejectWithValue(error.message);
-        }
-      }
-      state.user = action.payload;
-    }
   },
   extraReducers: (builder) => {
     builder
@@ -154,12 +129,14 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.user = action.payload;
+        state.authReady = true;
         state.name = action.payload.name;
         state.email = action.payload.email;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
+        state.authReady = true;
       })
       //Update User Details 
       .addCase(updateUserDetails.pending, (state) => {
@@ -167,15 +144,14 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(updateUserDetails.fulfilled, (state, action) => {
-       console.log('user updated')
-        state.user = action.payload;
-        state.status ='succeeded';
-        state.name = action.payload.name;
-        state.grade = action.payload.grade;
-        state.group = action.payload.group;
-        state.age = action.payload.age;
-        state.part = action.payload.part;
-        state.error =  action.payload;
+        state.user = { ...state.user, ...action.payload };
+        state.status = "succeeded";
+        state.name = state.user.name;
+        state.grade = state.user.grade;
+        state.group = state.user.group;
+        state.age = state.user.age;
+        state.part = state.user.part;
+        state.error = null;
       })
       // Register
       .addCase(registerUser.pending, (state) => {
@@ -185,6 +161,7 @@ const authSlice = createSlice({
       .addCase(registerUser.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.user = action.payload;
+        state.authReady = true;
         state.name = action.payload.name;
         state.grade = action.payload.grade;
         state.group = action.payload.group;
@@ -199,24 +176,33 @@ const authSlice = createSlice({
       .addCase(logoutUser.fulfilled, (state) => {
         state.user = null;
         state.status = "idle";
+        state.authReady = true;
+      })
+      .addCase(logoutUser.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
       });
   },
 });
 export const listenForAuthChanges = () => (dispatch) => {
-  const authInstance = getAuth();
-  onAuthStateChanged(authInstance, async (user) => {
+  const unsubscribe = onAuthStateChanged(auth, async (user) => {
     if (user) {
-      // Optionally, fetch additional user details from Firestore:
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      if (userDoc.exists()) {
-        dispatch(setUser({ uid: user.uid, ...userDoc.data() }));
-      } else {
+      try {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          dispatch(setUser({ uid: user.uid, ...userDoc.data() }));
+        } else {
+          dispatch(setUser({ uid: user.uid, email: user.email }));
+        }
+      } catch (error) {
+        console.error("Unable to load signed-in user data:", error);
         dispatch(setUser({ uid: user.uid, email: user.email }));
       }
     } else {
       dispatch(clearUser());
     }
   });
+  return unsubscribe;
 };
-export const { setUser, clearUser, update } = authSlice.actions;
+export const { setUser, clearUser } = authSlice.actions;
 export default authSlice.reducer;

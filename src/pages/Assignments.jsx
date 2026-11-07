@@ -1,70 +1,127 @@
-import React, { useEffect, useState } from "react";
-import { FaBook } from "react-icons/fa6";
-import { useSelector, useDispatch } from "react-redux";
+import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { FaListCheck } from "react-icons/fa6";
 import { getgradesLessons } from "../redux/slices/gradeContentSlice";
-const Assignments = ({ title }) => {
-  const { items } = useSelector((state) => state.auth);
-  const user = useSelector((state) => state.auth.user);
-  const assignments = useSelector((state) => state.gradeContent.gradeData);
+
+const Assignments = ({ title = "Assignments" }) => {
   const dispatch = useDispatch();
-  const [page, setPage] = useState(0)
+  const grade = useSelector((state) => state.auth.user?.grade);
+  const assignments = useSelector(
+    (state) => state.gradeContent.gradeData?.assignments ?? []
+  );
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [page, setPage] = useState(0);
 
   useEffect(() => {
-    dispatch(getgradesLessons(user?.grade));
-  }, [user?.grade]);
+    let active = true;
+    setPage(0);
+    setError("");
+
+    if (!grade) {
+      setLoading(false);
+      setError("Your account does not have a grade assigned yet.");
+      return () => {
+        active = false;
+      };
+    }
+
+    setLoading(true);
+    dispatch(getgradesLessons(grade))
+      .unwrap()
+      .catch((requestError) => {
+        if (active) {
+          setError(
+            typeof requestError === "string"
+              ? requestError
+              : "Assignments could not be loaded. Please try again."
+          );
+        }
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [dispatch, grade]);
+
+  const assignment = assignments[page];
 
   return (
-    <div>
-      <div className="w-[100%]fades ">
-        <div className="flex bg-white mb-1 shadow-lg rounded-xl p-2  gap-1 items-center">
-          <FaBook />
-          <h2 className="font-mono font-bold ">
-            {title} {user?.grade}{" "}
+    <section aria-labelledby="assignments-heading">
+      <div className="mb-5 flex items-center gap-3">
+        <span className="flex h-11 w-11 items-center justify-center border border-[#C9A24B]/40 text-[#C9A24B]">
+          <FaListCheck aria-hidden="true" />
+        </span>
+        <div>
+          <h2 id="assignments-heading" className="font-display text-2xl font-semibold">
+            {title}
           </h2>
+          <p className="mt-1 font-sans text-xs uppercase tracking-[0.16em] text-[#B9A685]">
+            {grade || "Grade not set"}
+          </p>
         </div>
-        {assignments?.assignments && assignments.assignments.length > 0 ? (
-          assignments.assignments.map((assignment, index) => (
-            <div key={assignment.id}  className={`${
-              index !== page && "hidden"
-            } bg-neutral-100 mb-2 p-2 md:p-4 rounded-xl shadow-lg`}>
-              <h1 className="text-2xl md:w-full  text-amber-800 mt-3 font-extrabold text-left">
-                {assignment.title}
-              </h1>
-
-        
-              <p className="mb-3 text-[13px]  md:w-full md:text-md font-bold  " dangerouslySetInnerHTML={{ __html: assignment.content.replace(/\n/g, "<br>") }} />
-
-            </div>
-          ))
-        ) : (
-          <h1 className="text-center text-2xl text-amber-800 font-extrabold">
-            No Assignments available
-          </h1>
-        )}
-
-{assignments?.assignments && assignments.assignments.length > 0 ? (
-              assignments.assignments.map((_, index) => (
-                <button
-                  className={` ${
-                    index === page ? "bg-amber-700 text-black ease-in-out" : " "
-                  } bg-slate-900 rounded-md gap-3 
-                  text-white p-2 border justify-center items-center justify-self-end  
-                  flex hover:bg-sky-600`}
-                  key={index}
-                  onClick={() => setPage(index)}
-                >
-                  {index}
-                </button>
-
-              
-                  
-              ))
-            ) : (
-              <></>
-            )}
       </div>
-    </div>
+
+      {loading ? (
+        <p className="border border-[#C9A24B]/20 bg-[#150B07] p-6 text-sm text-[#D9C9A8]" role="status">
+          Loading assignments…
+        </p>
+      ) : error ? (
+        <p className="border border-red-900/60 bg-[#1B0E08] p-6 text-sm text-red-200" role="alert">
+          {error}
+        </p>
+      ) : assignments.length === 0 ? (
+        <p className="border border-[#C9A24B]/20 bg-[#150B07] p-6 text-sm text-[#B9A685]">
+          No assignments have been posted for your grade yet.
+        </p>
+      ) : (
+        <>
+          <article className="border border-[#C9A24B]/25 bg-[#150B07] p-5 sm:p-7">
+            <p className="font-sans text-[10px] uppercase tracking-[0.2em] text-[#C9A24B]">
+              Assignment {page + 1} of {assignments.length}
+            </p>
+            <h3 className="font-display mt-3 text-2xl font-semibold text-[#F5EBD8]">
+              {assignment.title}
+            </h3>
+            <p className="mt-5 whitespace-pre-wrap break-words text-sm leading-7 text-[#D9C9A8]">
+              {assignment.content}
+            </p>
+          </article>
+          {assignments.length > 1 && (
+            <div className="mt-4 flex items-center justify-between gap-3">
+              <button
+                type="button"
+                disabled={page === 0}
+                onClick={() => setPage((current) => current - 1)}
+                className="border border-[#C9A24B]/40 px-4 py-2 font-sans text-xs uppercase tracking-[0.12em] text-[#D9C9A8] transition-colors hover:border-[#C9A24B] hover:text-[#C9A24B] disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Previous
+              </button>
+              <span className="font-sans text-xs text-[#8B6F3C]" aria-live="polite">
+                {page + 1} / {assignments.length}
+              </span>
+              <button
+                type="button"
+                disabled={page === assignments.length - 1}
+                onClick={() => setPage((current) => current + 1)}
+                className="border border-[#C9A24B]/40 px-4 py-2 font-sans text-xs uppercase tracking-[0.12em] text-[#D9C9A8] transition-colors hover:border-[#C9A24B] hover:text-[#C9A24B] disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </>
+      )}
+    </section>
   );
 };
 
 export default Assignments;
+
+Assignments.propTypes = {
+  title: PropTypes.string,
+};

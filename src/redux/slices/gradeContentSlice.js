@@ -1,77 +1,77 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { db } from '../../config/firebaseconfig';
-import { doc, updateDoc, getDocs, getDoc,collection,query,where, arrayUnion } from 'firebase/firestore';
-import { useSelector } from 'react-redux';
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import {
+  arrayUnion,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  updateDoc,
+} from "firebase/firestore";
+import { db } from "../../config/firebaseconfig";
 
-
-// Post an assignment for a given grade
 export const postGradeAssignment = createAsyncThunk(
-  'gradeContent/postAssignment',
-  async ({ grade, assignmentData }) => {
-    const user = useSelector((state)=> state.auth.user);
-     grade = user.grade
-    // grade: e.g., "Grade1"
-    const gradeDocRef = doc(db, 'grades', grade);
-    await updateDoc(gradeDocRef, {
-      assignments: arrayUnion(assignmentData)
-    });
-    return assignmentData;
-  }
-);
-
-export const getgradeAssignment = createAsyncThunk(
-  'gradeContent/getAssignment',
-  async () => {
-   const q = query(collection(db, 'grades'), where('assignments', 'array-contains', true));
-    const querySnapshot = await getDocs(q);
-    const assignments = [];
-    querySnapshot.forEach((docSnap) => {
-      assignments.push({ id: docSnap.id,...docSnap.data() });
-    });
-    return assignments;
-
-  }
-);
-
-
-
-// Post a lesson for a given grade
-export const postGradeLesson = createAsyncThunk(
-  'gradeContent/postLesson',
-  async ({ grade, lessonData }) => {
-    const user = useSelector((state)=> state.auth.user);
-    grade= user.grade
-    const gradeDocRef = doc(db, 'grades', grade);
-    await updateDoc(gradeDocRef, {
-      lessons: arrayUnion(lessonData)
-    });
-    return lessonData;
-  }
-);
-export const getgradesLessons = createAsyncThunk(
-  'gradeContent/getLessons',
-  async (grade, thunkAPI) => {
+  "gradeContent/postAssignment",
+  async ({ grade, assignmentData }, thunkAPI) => {
     try {
-      const gradeDocRef = doc(db, 'grades', grade);
-      const gradeDoc = await getDoc(gradeDocRef);
-      if (gradeDoc.exists()) {
-        return { grade, ...gradeDoc.data() };
-      } else {
-        return thunkAPI.rejectWithValue('No data found for this grade');
-      }
+      await updateDoc(doc(db, "grades", grade), {
+        assignments: arrayUnion(assignmentData),
+      });
+      return assignmentData;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
   }
+);
 
-)
+export const getgradeAssignment = createAsyncThunk(
+  "gradeContent/getAssignment",
+  async (_, thunkAPI) => {
+    try {
+      const snapshot = await getDocs(collection(db, "grades"));
+      return snapshot.docs
+        .map((gradeDoc) => ({ id: gradeDoc.id, ...gradeDoc.data() }))
+        .filter((grade) => Array.isArray(grade.assignments) && grade.assignments.length);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+export const postGradeLesson = createAsyncThunk(
+  "gradeContent/postLesson",
+  async ({ grade, lessonData }, thunkAPI) => {
+    try {
+      await updateDoc(doc(db, "grades", grade), {
+        lessons: arrayUnion(lessonData),
+      });
+      return lessonData;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+export const getgradesLessons = createAsyncThunk(
+  "gradeContent/getLessons",
+  async (grade, thunkAPI) => {
+    try {
+      const gradeDoc = await getDoc(doc(db, "grades", grade));
+      if (!gradeDoc.exists()) {
+        return { grade, lessons: [], assignments: [] };
+      }
+      return { grade, ...gradeDoc.data() };
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
 export const addAssignment = createAsyncThunk(
-  'gradeContent/addAssignment',
+  "gradeContent/addAssignment",
   async ({ userGrade, assignment }, thunkAPI) => {
     try {
-      const gradeDocRef = doc(db, 'grades', userGrade);
-      await updateDoc(gradeDocRef, {
-        assignments: arrayUnion(assignment)
+      await updateDoc(doc(db, "grades", userGrade), {
+        assignments: arrayUnion(assignment),
       });
       return assignment;
     } catch (error) {
@@ -81,33 +81,48 @@ export const addAssignment = createAsyncThunk(
 );
 
 const gradeContentSlice = createSlice({
-  name: 'gradeContent',
-  initialState: {assign: [], gradeData:null, gradeAssignmentss:{}, assignments: [], lessons: [], status: 'idle', error: null },
+  name: "gradeContent",
+  initialState: {
+    gradeData: null,
+    assignments: [],
+    lessons: [],
+    status: "idle",
+    error: null,
+  },
   reducers: {},
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder
+      .addCase(getgradesLessons.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(getgradesLessons.fulfilled, (state, action) => {
+        state.gradeData = action.payload;
+        state.status = "succeeded";
+        state.error = null;
+      })
+      .addCase(getgradesLessons.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload || action.error.message;
+      })
+      .addCase(getgradeAssignment.fulfilled, (state, action) => {
+        state.assignments = action.payload;
+        state.status = "succeeded";
+        state.error = null;
+      })
+      .addCase(getgradeAssignment.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload || action.error.message;
+      })
       .addCase(postGradeAssignment.fulfilled, (state, action) => {
         state.assignments.push(action.payload);
       })
-     
       .addCase(addAssignment.fulfilled, (state, action) => {
         state.assignments.push(action.payload);
       })
       .addCase(postGradeLesson.fulfilled, (state, action) => {
         state.lessons.push(action.payload);
-      })
-      .addCase(getgradesLessons.fulfilled, (state, action) => {
-        state.gradeData= action.payload;
-        state.status ='succeeded';
-        state.error = null;
-      })
-     .addCase(getgradeAssignment.fulfilled, (state, action) => {
-      state.assign.push(...action.payload);
-      state.assignments = action.payload;
-      state.gradeAssignments = action.payload;
-       state.status ='succeeded';
-       state.error = null;
-  });
+      });
   },
 });
 

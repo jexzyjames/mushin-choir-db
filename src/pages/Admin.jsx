@@ -1,100 +1,169 @@
-// AdminPanel.jsx
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { postGradeAssignment, postGradeLesson } from '../redux/slices/adminSlice';
-import { ToastContainer, toast } from 'react-toastify';
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { postGradeAssignment, postGradeLesson } from "../redux/slices/adminSlice";
+
+const grades = ["PRELIM", "GRADE 1", "GRADE 2", "GRADE 3", "GRADE 4", "GRADE 5"];
+
+const fieldClass =
+  "mt-2 w-full border border-[#C9A24B]/25 bg-[#0F0805] px-3 py-3 text-sm text-[#F5EBD8] outline-none transition-colors placeholder:text-[#7A6A4E] focus:border-[#C9A24B]";
+const labelClass =
+  "block font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-[#C9A24B]";
+
 function AdminPanel() {
   const dispatch = useDispatch();
-  const [grade, setGrade] = useState('');
-  const [contentType, setContentType] = useState('assignment'); // 'assignment' or 'lesson'
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
+  const [grade, setGrade] = useState("");
+  const [contentType, setContentType] = useState("assignment");
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [feedback, setFeedback] = useState(null);
 
-  const handleSubmit = async(e) => {
-    e.preventDefault();
-    if (!grade) {
-      alert('Please select a grade');
-      toast.error('Please select a grade');
-      return;
-    }
-    if (contentType === 'assignment') {
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+    setFeedback(null);
 
-      try {
-        
-        await dispatch(postGradeAssignment({ grade, assignmentData: { title, content } }));
-       toast.success('Assignment posted successfully');
-      } catch (error) {
-        toast.error(error.message);
-        
+    const contentData = {
+      id: `${Date.now()}`,
+      title: title.trim(),
+      content: content.trim(),
+      createdAt: new Date().toISOString(),
+    };
+
+    try {
+      if (contentType === "assignment") {
+        await dispatch(
+          postGradeAssignment({ grade, assignmentData: contentData })
+        ).unwrap();
+      } else {
+        await dispatch(
+          postGradeLesson({ grade, lessonData: contentData })
+        ).unwrap();
       }
-    } else if (contentType === 'lesson') {
-      try {
-        
-       await dispatch(postGradeLesson({ grade, lessonData: { title, content } }));
-        toast.success('Lesson posted successfully');
-      } catch (error) {
-        toast.error(error.message);
-      }
+
+      setFeedback({
+        type: "success",
+        message: `${contentType === "assignment" ? "Assignment" : "Lesson"} posted successfully.`,
+      });
+      setTitle("");
+      setContent("");
+    } catch (error) {
+      setFeedback({
+        type: "error",
+        message:
+          typeof error === "string"
+            ? error
+            : "Content could not be posted. Please try again.",
+      });
+    } finally {
+      setLoading(false);
     }
-    // Clear fields after submission
-    setTitle('');
-    setContent('');
   };
 
   return (
-    <div className="h-screen text-center bg-slate-400 text-white flex flex-col justify-center items-center">
-      <h2 className='text-sky-600 mt-4 text-2xl font-extrabold  uppercase' >Admin Panel: Post Content by Grade</h2>
-      <form className='bg-white rounded-md w-full m-auto max-w-[400px] shadow-lg text-black p-2 flex flex-col ' onSubmit={handleSubmit}>
-        <label className='mb-1 text-left font-semibold text-sky-400'>
-          Select Grade:
-        </label>
-          <select className='cursor-pointer p-1 rounded-md shadow-md w-full  bg-slate-700 text-white' value={grade} onChange={(e) => setGrade(e.target.value)} required>
-            <option value="">--Select Grade--</option>
-            <option value="PRELIM">PRELIM</option>
-            <option value="GRADE 1">Grade1</option>
-            <option value="GRADE 2">Grade2</option>
-            <option value="GRADE 3">Grade3</option>
-            <option value="GRADE 4">Grade4</option>
-            <option value="GRADE 5">Grade5</option>
-            {/* Add more grade options as needed */}
-          </select>
-        <br />
-        <label className='text-left text-sky-400 mb-1 font-semibold' >
-          Content Type:
-        </label>
-          <select className='bg-slate-700 text-white cursor-pointer p-1 rounded-md shadow-lg ' value={contentType} onChange={(e) => setContentType(e.target.value)}>
-            <option value="assignment">Assignment</option>
-            <option value="lesson">Lesson</option>
-          </select>
-        <br />
-        <label className='text-left text-sky-500 font-semibold mb-1 ' >
-          Title:
-            </label>
+    <section className="mx-auto max-w-3xl">
+      <div className="mb-6">
+        <p className="font-sans text-[10px] uppercase tracking-[0.22em] text-[#8B6F3C]">
+          Share learning materials
+        </p>
+        <h2 className="font-display mt-2 text-2xl font-semibold sm:text-3xl">
+          Create grade content
+        </h2>
+        <p className="mt-2 text-sm leading-relaxed text-[#B9A685]">
+          Choose a grade and content type, then provide a clear title and lesson or assignment text.
+        </p>
+      </div>
+
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-5 border border-[#C9A24B]/25 bg-[#150B07] p-5 sm:p-8"
+      >
+        <div className="grid gap-5 sm:grid-cols-2">
+          <label className={labelClass}>
+            Grade
+            <select
+              className={fieldClass}
+              value={grade}
+              onChange={(event) => setGrade(event.target.value)}
+              required
+            >
+              <option className="bg-[#150B07]" value="">
+                Select a grade
+              </option>
+              {grades.map((option) => (
+                <option className="bg-[#150B07]" key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className={labelClass}>
+            Content type
+            <select
+              className={fieldClass}
+              value={contentType}
+              onChange={(event) => setContentType(event.target.value)}
+            >
+              <option className="bg-[#150B07]" value="assignment">
+                Assignment
+              </option>
+              <option className="bg-[#150B07]" value="lesson">
+                Lesson
+              </option>
+            </select>
+          </label>
+        </div>
+
+        <label className={labelClass}>
+          Title
           <input
-          className='w-full bg-slate-700 p-1 rounded-md shadow-md text-white font-bold'
+            className={fieldClass}
             type="text"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Enter title"
+            onChange={(event) => setTitle(event.target.value)}
+            placeholder="e.g. Introduction to rhythm"
+            maxLength={120}
             required
           />
-        <br />
-        <label className='text-left text-sky-500 font-semibold mb-1' >
-          Content:
-          </label>
+        </label>
+
+        <label className={labelClass}>
+          Content
           <textarea
+            className={`${fieldClass} min-h-48 resize-y`}
             value={content}
-            className='text-white bg-slate-700 rounded-md shadow-md p-1'
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="Enter content"
+            onChange={(event) => setContent(event.target.value)}
+            placeholder="Write the lesson or assignment details…"
+            maxLength={10000}
             required
-            rows={10}
           />
-        <br />
-        <button className='text-white p-1 cursor-pointer  hover:bg-sky-400 bg-sky-500' type="submit">Post {contentType === 'assignment' ? 'Assignment' : 'Lesson'}</button>
+        </label>
+
+        {feedback && (
+          <p
+            className={`border px-4 py-3 text-sm ${
+              feedback.type === "success"
+                ? "border-[#C9A24B]/30 text-[#D9C9A8]"
+                : "border-red-900/60 text-red-200"
+            }`}
+            role={feedback.type === "error" ? "alert" : "status"}
+          >
+            {feedback.message}
+          </p>
+        )}
+
+        <button
+          className="w-full border border-[#C9A24B] bg-[#C9A24B] px-5 py-3 font-sans text-xs font-semibold uppercase tracking-[0.2em] text-[#150B07] transition-colors hover:bg-transparent hover:text-[#C9A24B] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+          type="submit"
+          disabled={loading}
+        >
+          {loading
+            ? "Publishing…"
+            : `Publish ${contentType === "assignment" ? "assignment" : "lesson"}`}
+        </button>
       </form>
-      <ToastContainer />
-    </div>
+    </section>
   );
 }
 

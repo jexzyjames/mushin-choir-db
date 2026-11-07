@@ -1,104 +1,110 @@
-import React, { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { FaAlignLeft, FaRegAddressCard, FaTimes, FaUser } from "react-icons/fa";
 import logo from "../assets/logo.jpg";
-import { FaUser, FaAlignLeft, FaRegAddressCard } from "react-icons/fa6";
-import { FaTimes } from "react-icons/fa";
 
-const Logo = (
-  <span>
-    <Link className="flex gap-[2px]" to="/">
-      <img className=" w-10 h-10" src={logo} alt="" />
-    </Link>
-  </span>
-);
+const navigation = [
+  { label: "Home", id: "home" },
+  { label: "Programs", id: "programs" },
+  { label: "Announcements", id: "announcements" },
+  { label: "About", id: "about" },
+  { label: "Leadership", id: "leadership" },
+  { label: "Contact", id: "contact" },
+];
+
 const Header = () => {
-  const [isOpen, setIsOpen] = useState(true);
-
+  const [isOpen, setIsOpen] = useState(false);
   const user = useSelector((state) => state.auth.user);
 
+  const closeMenu = () => setIsOpen(false);
+  const scrollToSection = (event, id) => {
+    event.preventDefault();
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    closeMenu();
+  };
+
   return (
-    <div className=" m-0 md:h-1  px-[2%]   md:px-[10%] py-4 md:flex w-full relative justify-between  text-slate-900  ">
-      {Logo}
-      <div className=" absolute md:hidden md:relative top-7 md:right-0 md:top-0 right-0">
-        <FaAlignLeft
-          onClick={() => {
-            setIsOpen(!isOpen);
-            console.log(isOpen);
-          }}
-          className="cursor-pointer text-white h-[20px] w-[90px]"
-        />
-      </div>
-      <nav className="md:flex  flex flex-col md:justify-center">
-        <ul
-        onClick={()=>setIsOpen(true)}
-          className={`md:flex md:relative bg-sky-500 text-white    opacity-0 justify-start items-start md:items-start flex flex-col md:flex-row fixed top-0 h-[100%] bottom-0 right-0 w-[150px] p-5 py-[120px] md:p-2 cursor-pointer ${
-            !isOpen
-              ? " opacity-100 text-white  translate-y-0"
-              : "opacity-0  text-white-translate-y-5 pointer-events-none md:opacity-100 md:translate-y-0 md:pointer-events-auto"
-          }  md:relative md:bg-transparent bottom-0 top-0 fixed h-full   bg-sky-800  text-amber-500  gap-4`}
+    <header className="sticky top-0 z-50 border-b border-[#C9A24B]/25 bg-[#150B07]/95 text-[#F5EBD8] shadow-lg shadow-black/10 backdrop-blur">
+      <div className="mx-auto flex min-h-20 max-w-6xl items-center justify-between px-5">
+        <Link
+          className="flex items-center gap-3"
+          to="/"
+          aria-label="Old Mushin Youth Choir home"
+          onClick={closeMenu}
         >
-          <FaTimes
-            className=" md:hidden h-[25px] w-[80px] absolute top-7  md:top-0  right-0  flex justify-end items-end cursor-pointer "
-            onClick={() => setIsOpen(!isOpen)}
-          />
-          <li className="mt-1  md:mt-0">
-            <NavLink to="/">Home</NavLink>
-          </li>
+          <img className="h-12 w-12 object-contain" src={logo} alt="" />
+          <span className="font-display text-lg font-semibold tracking-wide text-[#F5EBD8] sm:text-xl">
+            Old Mushin Youth Choir
+          </span>
+        </Link>
 
-          <li>
-            <NavLink to="community">Community</NavLink>
-          </li>
+        <button
+          type="button"
+          className="flex h-11 w-11 items-center justify-center border border-[#C9A24B]/40 text-[#C9A24B] transition-colors hover:bg-[#C9A24B]/10 md:hidden"
+          aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={isOpen}
+          aria-controls="primary-navigation"
+          onClick={() => setIsOpen((open) => !open)}
+        >
+          {isOpen ? <FaTimes /> : <FaAlignLeft />}
+        </button>
 
-          <li>
-            <NavLink to="about">About</NavLink>
-          </li>
+        <nav
+          id="primary-navigation"
+          className={`${isOpen ? "flex" : "hidden"} absolute left-0 right-0 top-full flex-col gap-1 border-b border-[#C9A24B]/25 bg-[#150B07] px-5 py-4 md:static md:flex md:flex-row md:items-center md:gap-7 md:border-0 md:bg-transparent md:p-0`}
+        >
+          {navigation.map(({ label, id }) => (
+            <a
+              key={id}
+              href={`#${id}`}
+              onClick={(event) => scrollToSection(event, id)}
+              className="py-2 font-sans text-xs font-medium uppercase tracking-[0.18em] text-[#D9C9A8] transition-colors hover:text-[#C9A24B] md:py-3"
+            >
+              {label}
+            </a>
+          ))}
 
-          <li>
-            <NavLink to="contact">Contact</NavLink>
-          </li>
-          <div className="flex md:hidden pt-3">
+          <div className="mt-2 border-t border-[#C9A24B]/20 pt-4 md:hidden">
             {user?.name ? (
-              <div className="flex rounded-md justify-center md:bg-purple-600  items-center bg-purple-500 ">
-
-              <Link className="px-4 py-1  text-white" to="/dash">
-                {" "}
-                <FaUser /> 
+              <Link
+                className="flex items-center gap-2 py-2 font-sans text-xs uppercase tracking-[0.16em] text-[#C9A24B]"
+                to="/dash"
+                onClick={closeMenu}
+              >
+                <FaUser /> {user.name}
               </Link>
-                {user.name}
-              </div>
             ) : (
               <Link
                 to="/reg"
-                className="px-4 bg-sky-400 flex gap-2 items-center justify-center   py-1 rounded-[30px] text-white hover:bg-black "
+                onClick={closeMenu}
+                className="inline-flex items-center gap-2 border border-[#C9A24B] px-4 py-2 font-sans text-xs uppercase tracking-[0.16em] text-[#C9A24B] transition-colors hover:bg-[#C9A24B] hover:text-[#150B07]"
               >
-                {" "}
                 <FaRegAddressCard /> Register
               </Link>
             )}
           </div>
-        </ul>
-      </nav>
-      <div className="hidden md:block">
-        {user?.name ? (
-          <div className="flex">
+        </nav>
 
-          <Link className="px-4 py-1 flex gap-1 items-center justify-center bg-purple-500 rounded-md   text-white" to="dash">
-            {" "}
-            <FaUser /> {user.name}
-          </Link>
-          </div>
-        ) : (
-          <Link
-            to="/reg"
-            className="px-4 bg-sky-400 flex gap-2 items-center justify-center   py-1 rounded-[30px] text-white hover:bg-black "
-          >
-            {" "}
-            <FaRegAddressCard /> Register
-          </Link>
-        )}
+        <div className="hidden md:block">
+          {user?.name ? (
+            <Link
+              className="flex items-center gap-2 border border-[#C9A24B]/50 px-4 py-2 font-sans text-xs uppercase tracking-[0.12em] text-[#C9A24B] transition-colors hover:bg-[#C9A24B]/10"
+              to="/dash"
+            >
+              <FaUser /> {user.name}
+            </Link>
+          ) : (
+            <Link
+              to="/reg"
+              className="inline-flex items-center gap-2 border border-[#C9A24B] px-4 py-2 font-sans text-xs uppercase tracking-[0.16em] text-[#C9A24B] transition-colors hover:bg-[#C9A24B] hover:text-[#150B07]"
+            >
+              <FaRegAddressCard /> Register
+            </Link>
+          )}
+        </div>
       </div>
-    </div>
+    </header>
   );
 };
 
