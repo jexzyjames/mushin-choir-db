@@ -22,13 +22,17 @@ import Filter from "./Testing/Filter";
 import AdminLayout from "./pages/layout/AdminLayout";
 import Hero from "./pages/layout/Hero";
 import { listenForAuthChanges } from "./redux/slices/authSlice";
+import ThemeToggle from "./components/ThemeToggle";
 
 function RequireAuth() {
   const { user, authReady } = useSelector((state) => state.auth);
 
   if (!authReady) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#0B0704] text-[#D9C9A8]">
+      <div className="relative flex min-h-screen items-center justify-center bg-[#0B0704] text-[#D9C9A8]">
+        <div className="absolute right-4 top-4">
+          <ThemeToggle />
+        </div>
         Checking your session…
       </div>
     );
@@ -39,7 +43,10 @@ function RequireAuth() {
 
 function NotFound() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#0B0704] px-5 text-center text-[#F5EBD8]">
+    <main className="relative flex min-h-screen items-center justify-center bg-[#0B0704] px-5 text-center text-[#F5EBD8]">
+      <div className="absolute right-4 top-4">
+        <ThemeToggle />
+      </div>
       <div className="max-w-lg">
         <p className="font-sans text-xs uppercase tracking-[0.25em] text-[#C9A24B]">
           Old Mushin Youth Choir

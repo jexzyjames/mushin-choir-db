@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import { registerUser } from "../redux/slices/authSlice";
+import ThemeToggle from "../components/ThemeToggle";
 
 const fieldClass =
   "mt-2 w-full border border-[#C9A24B]/25 bg-[#0F0805] px-3 py-3 text-sm text-[#F5EBD8] outline-none transition-colors placeholder:text-[#7A6A4E] focus:border-[#C9A24B]";
@@ -115,12 +116,15 @@ const Register = () => {
   return (
     <main className="min-h-screen bg-[#0B0704] px-4 py-8 text-[#F5EBD8] sm:px-6 sm:py-12">
       <section className="mx-auto max-w-3xl border border-[#C9A24B]/30 bg-[#150B07] p-5 shadow-2xl shadow-black/30 sm:p-9">
-        <Link
-          to="/"
-          className="font-sans text-[10px] uppercase tracking-[0.22em] text-[#C9A24B] hover:text-[#F5EBD8]"
-        >
-          Old Mushin Youth Choir
-        </Link>
+        <div className="flex items-center justify-between gap-3">
+          <Link
+            to="/"
+            className="font-sans text-[10px] uppercase tracking-[0.22em] text-[#C9A24B] hover:text-[#F5EBD8]"
+          >
+            Old Mushin Youth Choir
+          </Link>
+          <ThemeToggle />
+        </div>
         <h1 className="font-display mt-5 text-3xl font-semibold sm:text-4xl">
           Join the choir
         </h1>

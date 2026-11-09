@@ -1,0 +1,16 @@
+{
+  "name": "mushin-choir-functions",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "20"
+  },
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "firebase-admin": "^13.2.0",
+    "firebase-functions": "^6.3.2"
+  }
+}

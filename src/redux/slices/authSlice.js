@@ -5,6 +5,8 @@ import {
   createUserWithEmailAndPassword,
   updateProfile,
   signOut,
+  GoogleAuthProvider,
+  signInWithPopup,
 } from "firebase/auth";
 import { auth, db } from "../../config/firebaseconfig";
 import { onAuthStateChanged } from "firebase/auth";
@@ -12,7 +14,6 @@ import {
   doc,
   setDoc,
   getDoc,
-  updateDoc,
 } from "firebase/firestore";
 // Async thunk for logging in
 export const loginUser = createAsyncThunk(
@@ -29,6 +30,40 @@ export const loginUser = createAsyncThunk(
       } else {
         return thunkAPI.rejectWithValue("User data not found in Firestore.");
       }
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+export const loginWithGoogle = createAsyncThunk(
+  "auth/loginWithGoogle",
+  async (_, thunkAPI) => {
+    try {
+      const provider = new GoogleAuthProvider();
+      const userCredential = await signInWithPopup(auth, provider);
+      const { user } = userCredential;
+      const userRef = doc(db, "users", user.uid);
+      const userSnapshot = await getDoc(userRef);
+      if (userSnapshot.exists()) {
+        return { uid: user.uid, ...userSnapshot.data() };
+      }
+
+      const newAccount = {
+        uid: user.uid,
+        name: user.displayName || "",
+        email: user.email || "",
+        imageUrl: user.photoURL || "",
+        grade: "",
+        group: "",
+        part: "",
+        number: "",
+        age: "",
+        createdAt: new Date().toISOString(),
+      };
+
+      await setDoc(userRef, newAccount);
+      return newAccount;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
@@ -84,15 +119,24 @@ export const logoutUser = createAsyncThunk(
 );
 export const updateUserDetails = createAsyncThunk(
   "users/updateUserDetails",
-async ({ id, userData }, thunkAPI) => {
-  try {
-    await updateDoc(doc(db, "users", id), userData);
-    return { id, ...userData };
-  } catch (error) {
-    return thunkAPI.rejectWithValue(error.message);
-  }
+  async ({ id, userData }, thunkAPI) => {
+    try {
+      const currentUser = auth.currentUser;
+      if (!currentUser || currentUser.uid !== id) {
+        return thunkAPI.rejectWithValue(
+          "You must be signed in to update this profile."
+        );
+      }
 
-});
+      await setDoc(doc(db, "users", currentUser.uid), userData, {
+        merge: true,
+      });
+      return { id: currentUser.uid, ...userData };
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
 
 
 const authSlice = createSlice({
@@ -134,6 +178,26 @@ const authSlice = createSlice({
         state.email = action.payload.email;
       })
       .addCase(loginUser.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+        state.authReady = true;
+      })
+      .addCase(loginWithGoogle.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(loginWithGoogle.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.user = action.payload;
+        state.authReady = true;
+        state.name = action.payload.name;
+        state.email = action.payload.email;
+        state.grade = action.payload.grade;
+        state.group = action.payload.group;
+        state.part = action.payload.part;
+        state.age = action.payload.age;
+      })
+      .addCase(loginWithGoogle.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
         state.authReady = true;

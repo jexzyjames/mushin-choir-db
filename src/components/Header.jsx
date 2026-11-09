@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { FaAlignLeft, FaRegAddressCard, FaTimes, FaUser } from "react-icons/fa";
 import logo from "../assets/logo.jpg";
+import ThemeToggle from "./ThemeToggle";
 
 const navigation = [
   { label: "Home", id: "home" },
@@ -34,25 +35,28 @@ const Header = () => {
           onClick={closeMenu}
         >
           <img className="h-12 w-12 object-contain" src={logo} alt="" />
-          <span className="font-display text-lg font-semibold tracking-wide text-[#F5EBD8] sm:text-xl">
+          <span className="font-display lg:text-lg font-semibold tracking-wide text-[#F5EBD8] sm:text-md">
             Old Mushin Youth Choir
           </span>
         </Link>
 
-        <button
-          type="button"
-          className="flex h-11 w-11 items-center justify-center border border-[#C9A24B]/40 text-[#C9A24B] transition-colors hover:bg-[#C9A24B]/10 md:hidden"
-          aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
-          aria-expanded={isOpen}
-          aria-controls="primary-navigation"
-          onClick={() => setIsOpen((open) => !open)}
-        >
-          {isOpen ? <FaTimes /> : <FaAlignLeft />}
-        </button>
+        <div className="flex items-center gap-2 lg:hidden">
+          <ThemeToggle />
+          <button
+            type="button"
+            className="flex h-11 w-11 items-center justify-center border border-[#C9A24B]/40 text-[#C9A24B] transition-colors hover:bg-[#C9A24B]/10"
+            aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={isOpen}
+            aria-controls="primary-navigation"
+            onClick={() => setIsOpen((open) => !open)}
+          >
+            {isOpen ? <FaTimes /> : <FaAlignLeft />}
+          </button>
+        </div>
 
         <nav
           id="primary-navigation"
-          className={`${isOpen ? "flex" : "hidden"} absolute left-0 right-0 top-full flex-col gap-1 border-b border-[#C9A24B]/25 bg-[#150B07] px-5 py-4 md:static md:flex md:flex-row md:items-center md:gap-7 md:border-0 md:bg-transparent md:p-0`}
+          className={`${isOpen ? "flex" : "hidden"} absolute left-0 right-0 top-full flex-col gap-1 border-b border-[#C9A24B]/25 bg-[#150B07] px-5 py-4 lg:static lg:flex lg:flex-row lg:items-center lg:gap-7 lg:border-0 lg:bg-transparent lg:p-0`}
         >
           {navigation.map(({ label, id }) => (
             <a
@@ -65,7 +69,7 @@ const Header = () => {
             </a>
           ))}
 
-          <div className="mt-2 border-t border-[#C9A24B]/20 pt-4 md:hidden">
+          <div className="mt-2 border-t border-[#C9A24B]/20 pt-4 lg:hidden">
             {user?.name ? (
               <Link
                 className="flex items-center gap-2 py-2 font-sans text-xs uppercase tracking-[0.16em] text-[#C9A24B]"
@@ -86,7 +90,8 @@ const Header = () => {
           </div>
         </nav>
 
-        <div className="hidden md:block">
+        <div className="hidden items-center gap-3 lg:flex">
+          <ThemeToggle />
           {user?.name ? (
             <Link
               className="flex items-center gap-2 border border-[#C9A24B]/50 px-4 py-2 font-sans text-xs uppercase tracking-[0.12em] text-[#C9A24B] transition-colors hover:bg-[#C9A24B]/10"

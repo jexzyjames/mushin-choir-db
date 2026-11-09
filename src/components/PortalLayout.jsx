@@ -11,6 +11,7 @@ import {
 } from "react-icons/fa6";
 import logo from "../assets/logo.jpg";
 import avatar from "../assets/reg-img.png";
+import ThemeToggle from "./ThemeToggle";
 
 const memberNavigation = [
   { label: "Dashboard", to: "/dash", icon: FaHouse, end: true },
@@ -46,7 +47,7 @@ function PortalLayout({ admin = false }) {
               : "Dashboard";
 
   return (
-    <div className="min-h-screen bg-[#0B0704] text-[#F5EBD8]">
+    <div className="min-h-screen w-full min-w-0 overflow-x-clip bg-[#0B0704] text-[#F5EBD8]">
       <header className="sticky top-0 z-40 border-b border-[#C9A24B]/25 bg-[#150B07]/95 backdrop-blur">
         <div className="mx-auto flex min-h-[76px] max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
           <Link to="/" className="flex min-w-0 items-center gap-3">
@@ -56,6 +57,7 @@ function PortalLayout({ admin = false }) {
             </span>
           </Link>
           <div className="flex items-center gap-3">
+            <ThemeToggle />
             <Link
               to={`/profile/${user?.uid}`}
               className="flex items-center gap-2 text-sm text-[#D9C9A8] transition-colors hover:text-[#C9A24B]"
@@ -81,7 +83,7 @@ function PortalLayout({ admin = false }) {
         </div>
       </header>
 
-      <div className="mx-auto grid min-h-[calc(100vh-76px)] max-w-7xl md:grid-cols-[230px_minmax(0,1fr)]">
+      <div className="mx-auto grid min-h-[calc(100vh-76px)] w-full min-w-0 max-w-7xl md:grid-cols-[230px_minmax(0,1fr)]">
         <aside className="border-b border-[#C9A24B]/20 bg-[#0F0805] px-4 py-3 md:border-b-0 md:border-r md:px-4 md:py-8">
           <p className="hidden px-3 pb-4 font-sans text-[10px] font-semibold uppercase tracking-[0.24em] text-[#8B6F3C] md:block">
             {admin ? "Administration" : "Choir portal"}
@@ -125,7 +127,7 @@ function PortalLayout({ admin = false }) {
           </nav>
         </aside>
 
-        <main className="min-w-0 px-4 py-6 sm:px-6 sm:py-8 lg:px-10">
+        <main className="w-full min-w-0 overflow-x-clip px-4 py-6 sm:px-6 sm:py-8 lg:px-10">
           <div className="mb-7 border-b border-[#C9A24B]/20 pb-5">
             <p className="font-sans text-[10px] uppercase tracking-[0.24em] text-[#8B6F3C]">
               {admin ? "Choir management" : `Welcome${user?.name ? `, ${user.name}` : ""}`}

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
+import useTheme from "../context/useTheme";
 import leaderPlaceholder from "../assets/dummy-img.jpeg";
 import choirLeaders from "../data/choirLeaders";
 
@@ -37,6 +38,7 @@ function ChoirMark({ size = 64 }) {
       height={size}
       viewBox="0 0 64 64"
       fill="none"
+      className="text-[#F5EBD8]"
       role="img"
       aria-label="Mushin Youth Choir crest: headphones and music note"
     >
@@ -44,13 +46,13 @@ function ChoirMark({ size = 64 }) {
       {/* headphone band */}
       <path
         d="M16 30C16 19.5 23 13 32 13C41 13 48 19.5 48 30"
-        stroke="#F5EBD8"
+        stroke="currentColor"
         strokeWidth="2.25"
         strokeLinecap="round"
       />
       {/* ear cups */}
-      <rect x="12.5" y="29" width="8" height="13" rx="3.5" stroke="#F5EBD8" strokeWidth="2.25" />
-      <rect x="43.5" y="29" width="8" height="13" rx="3.5" stroke="#F5EBD8" strokeWidth="2.25" />
+      <rect x="12.5" y="29" width="8" height="13" rx="3.5" stroke="currentColor" strokeWidth="2.25" />
+      <rect x="43.5" y="29" width="8" height="13" rx="3.5" stroke="currentColor" strokeWidth="2.25" />
       {/* music note nested in band */}
       <g transform="translate(26.5 24)">
         <path d="M9 0V14.2" stroke="#C9A24B" strokeWidth="2" strokeLinecap="round" />
@@ -82,6 +84,7 @@ Input.propTypes = {
 };
 
 export default function MushinYouthChoir({ leadership = choirLeaders }) {
+  const { theme } = useTheme();
   const [email, setEmail] = useState("");
   const [form, setForm] = useState({ name: "", phone: "", message: "" });
   const [subscribed, setSubscribed] = useState(false);
@@ -147,7 +150,9 @@ export default function MushinYouthChoir({ leadership = choirLeaders }) {
           className="absolute inset-0 -z-10"
           style={{
             background:
-              "radial-gradient(circle at 50% -10%, rgba(90,30,18,0.55), transparent 55%), linear-gradient(180deg, #150B07 0%, #0B0704 70%)",
+              theme === "light"
+                ? "radial-gradient(circle at 50% -10%, rgba(201,162,75,0.12), transparent 55%), linear-gradient(180deg, #FFFFFF 0%, #F7F5EF 70%)"
+                : "radial-gradient(circle at 50% -10%, rgba(90,30,18,0.55), transparent 55%), linear-gradient(180deg, #150B07 0%, #0B0704 70%)",
           }}
         />
         <div className="mx-auto flex max-w-3xl flex-col items-center px-6 py-20 text-center sm:py-28">

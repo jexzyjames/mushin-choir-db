@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
-import { loginUser } from "../redux/slices/authSlice";
+import { FaGoogle } from "react-icons/fa";
+import { loginUser, loginWithGoogle } from "../redux/slices/authSlice";
+import ThemeToggle from "../components/ThemeToggle";
 
 const fieldClass =
   "mt-2 w-full border border-[#C9A24B]/25 bg-[#0F0805] px-3 py-3 text-sm text-[#F5EBD8] outline-none transition-colors placeholder:text-[#7A6A4E] focus:border-[#C9A24B]";
@@ -37,15 +39,36 @@ const Login = () => {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      await dispatch(loginWithGoogle()).unwrap();
+      navigate("/dash", { replace: true });
+    } catch (loginError) {
+      setError(
+        typeof loginError === "string"
+          ? loginError
+          : "Google sign-in failed. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#0B0704] px-4 py-10 text-[#F5EBD8]">
       <section className="w-full max-w-md border border-[#C9A24B]/30 bg-[#150B07] p-6 shadow-2xl shadow-black/30 sm:p-9">
-        <Link
-          to="/"
-          className="font-sans text-[10px] uppercase tracking-[0.22em] text-[#C9A24B] hover:text-[#F5EBD8]"
-        >
-          Old Mushin Youth Choir
-        </Link>
+        <div className="flex items-center justify-between gap-3">
+          <Link
+            to="/"
+            className="font-sans text-[10px] uppercase tracking-[0.22em] text-[#C9A24B] hover:text-[#F5EBD8]"
+          >
+            Old Mushin Youth Choir
+          </Link>
+          <ThemeToggle />
+        </div>
         <h1 className="font-display mt-5 text-3xl font-semibold sm:text-4xl">
           Welcome back
         </h1>
@@ -53,7 +76,25 @@ const Login = () => {
           Sign in to open your choir member portal.
         </p>
 
-        <form className="mt-8 space-y-5" onSubmit={handleLogin}>
+        <button
+          type="button"
+          onClick={handleGoogleLogin}
+          disabled={loading}
+          className="mt-8 flex min-h-12 w-full items-center justify-center gap-3 border border-[#C9A24B]/40 px-5 py-3 font-sans text-xs font-semibold uppercase tracking-[0.12em] text-[#D9C9A8] transition-colors hover:border-[#C9A24B] hover:bg-[#C9A24B]/10 hover:text-[#C9A24B] disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <FaGoogle aria-hidden="true" />
+          {loading ? "Signing in…" : "Continue with Google"}
+        </button>
+
+        <div className="my-6 flex items-center gap-3" aria-hidden="true">
+          <span className="h-px flex-1 bg-[#C9A24B]/20" />
+          <span className="font-sans text-[10px] uppercase tracking-[0.15em] text-[#8B6F3C]">
+            or use email
+          </span>
+          <span className="h-px flex-1 bg-[#C9A24B]/20" />
+        </div>
+
+        <form className="space-y-5" onSubmit={handleLogin}>
           <label className={labelClass}>
             Email address
             <input

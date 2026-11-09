@@ -4,6 +4,7 @@
 
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  color-scheme: dark;
   color: #f5ebd8;
   background: #0b0704;
   font-synthesis: none;
@@ -23,6 +24,89 @@ body {
   min-height: 100vh;
   margin: 0;
   background: #0b0704;
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
+  color: #302719;
+  background: #f7f5ef;
+}
+
+html[data-theme="light"] body {
+  background: #f7f5ef;
+}
+
+html[data-theme="light"] [class*="bg-[#0B0704]"] {
+  background-color: #f7f5ef !important;
+}
+
+html[data-theme="light"] [class*="bg-[#0F0805]"] {
+  background-color: #f1eee6 !important;
+}
+
+html[data-theme="light"] [class*="bg-[#150B07]"] {
+  background-color: #ffffff !important;
+}
+
+html[data-theme="light"] [class*="bg-[#1B0E08]"] {
+  background-color: #fff1ef !important;
+}
+
+html[data-theme="light"] [class*="bg-[#2A1B12]"] {
+  background-color: #f5f0e5 !important;
+}
+
+html[data-theme="light"] [class~="text-[#F5EBD8]"] {
+  color: #302719 !important;
+}
+
+html[data-theme="light"] [class~="text-[#D9C9A8]"] {
+  color: #51442f !important;
+}
+
+html[data-theme="light"] [class~="text-[#B9A685]"] {
+  color: #675b47 !important;
+}
+
+html[data-theme="light"] [class~="text-[#8B6F3C]"],
+html[data-theme="light"] [class~="text-[#7A6A4E]"] {
+  color: #725619 !important;
+}
+
+html[data-theme="light"] [class~="text-[#C9A24B]"] {
+  color: #805d12 !important;
+}
+
+html[data-theme="light"] [class*="border-[#C9A24B]"] {
+  border-color: #b99853 !important;
+}
+
+html[data-theme="light"] [class~="placeholder:text-[#7A6A4E]"]::placeholder {
+  color: #75684f !important;
+  opacity: 1;
+}
+
+html[data-theme="light"] .text-red-200 {
+  color: #991b1b !important;
+}
+
+html[data-theme="light"] .text-red-300 {
+  color: #b91c1c !important;
+}
+
+html[data-theme="light"] .Toastify__toast.choir-toast {
+  border-color: #d3c49e;
+  background: #ffffff !important;
+  color: #302719 !important;
+}
+
+html[data-theme="light"] .choir-toast-body {
+  color: #302719 !important;
+}
+
+html[data-theme="light"] .rich-content th,
+html[data-theme="light"] .rich-editor th {
+  color: #805d12;
 }
 
 #root {
@@ -72,6 +156,60 @@ a {
 .active {
   border-color: rgba(201, 162, 75, 0.5);
   color: #c9a24b;
+}
+
+.Toastify__toast-container--top-center {
+  position: fixed !important;
+  top: max(16px, env(safe-area-inset-top)) !important;
+  bottom: auto !important;
+  z-index: 10000 !important;
+}
+
+.Toastify__toast.choir-toast {
+  border: 1px solid rgba(201, 162, 75, 0.45);
+  border-radius: 0;
+  background: #150b07 !important;
+  color: #f5ebd8 !important;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+.choir-toast-body {
+  color: #f5ebd8 !important;
+}
+
+.rich-editor:empty::before {
+  color: #7a6a4e;
+  content: attr(data-placeholder);
+  pointer-events: none;
+}
+
+.rich-content table,
+.rich-editor table {
+  width: 100%;
+  margin: 0.75rem 0;
+  border-collapse: collapse;
+}
+
+.rich-content,
+.rich-editor {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.rich-content th,
+.rich-content td,
+.rich-editor th,
+.rich-editor td {
+  min-width: 5rem;
+  border: 1px solid rgba(201, 162, 75, 0.45);
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.rich-content th,
+.rich-editor th {
+  color: #c9a24b;
+  font-weight: 600;
 }
 
 @media (prefers-reduced-motion: reduce) {

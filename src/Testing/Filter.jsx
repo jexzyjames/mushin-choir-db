@@ -1,259 +1,397 @@
-
-
-import { useState, useEffect } from "react";
-import { db } from "../config/firebaseconfig"; // Import Firebase config
+import { useEffect, useMemo, useState } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
 import { Bar, Pie } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend } from "chart.js";
+import {
+  ArcElement,
+  BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  Legend,
+  LinearScale,
+  Title,
+  Tooltip,
+} from "chart.js";
 import { saveAs } from "file-saver";
-import dummy from '../assets/dummy-img.jpeg'
-ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
+import { FaDownload, FaFilter, FaUsers } from "react-icons/fa6";
+import { db } from "../config/firebaseconfig";
+import dummy from "../assets/dummy-img.jpeg";
+import useTheme from "../context/useTheme";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+const fieldClass =
+  "mt-2 block w-full min-w-0 border border-[#C9A24B]/25 bg-[#0F0805] px-3 py-3 text-sm text-[#F5EBD8] outline-none focus:border-[#C9A24B]";
+const labelClass =
+  "block min-w-0 font-sans text-[10px] font-semibold uppercase tracking-[0.16em] text-[#C9A24B]";
 const Filter = () => {
+  const { theme } = useTheme();
+  const chartTextColor = theme === "light" ? "#51442F" : "#D9C9A8";
+  const chartMutedColor = theme === "light" ? "#675B47" : "#B9A685";
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { labels: { color: chartTextColor } },
+    },
+    scales: {
+      x: { ticks: { color: chartMutedColor }, grid: { color: "rgba(201, 162, 75, 0.2)" } },
+      y: { ticks: { color: chartMutedColor }, grid: { color: "rgba(201, 162, 75, 0.2)" } },
+    },
+  };
   const [users, setUsers] = useState([]);
-  const [filteredUsers, setFilteredUsers] = useState([]);
-  const [filteredLessons, setFilteredLessons] = useState([]);
+  const [lessons, setLessons] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState("All");
-  const [selectedLessons, setSelectedLessons] = useState("All");
   const [selectedPart, setSelectedPart] = useState("All");
-  const [selectedGrade, setSelectedGrade] = useState("All");
-  let [lessons, setLesssons] = useState([]);
-  const [assignments, setAssignments] = useState([]);
-  let[grade,setGrade] = useState([])
+  const [selectedUserGrade, setSelectedUserGrade] = useState("All");
+  const [selectedLessonGrade, setSelectedLessonGrade] = useState("All");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, "users"), (snapshot) => {
-        const usersData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setUsers(usersData);
+    let usersLoaded = false;
+    let gradesLoaded = false;
+    const finishInitialLoad = () => {
+      if (usersLoaded && gradesLoaded) setLoading(false);
+    };
 
-       
-        const dats2 = onSnapshot(collection(db, "assignments"), (snapshot) => {
-            const assignmentsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setAssignments(assignmentsData);
-        }
+    const unsubscribeUsers = onSnapshot(
+      collection(db, "users"),
+      (snapshot) => {
+        setUsers(snapshot.docs.map((userDoc) => ({ id: userDoc.id, ...userDoc.data() })));
+        usersLoaded = true;
+        finishInitialLoad();
+      },
+      () => {
+        setError("Member data could not be loaded. Please try again later.");
+        usersLoaded = true;
+        finishInitialLoad();
+      }
+    );
+
+    const unsubscribeGrades = onSnapshot(
+      collection(db, "grades"),
+      (snapshot) => {
+        const allLessons = snapshot.docs.flatMap((gradeDoc) =>
+          (gradeDoc.data().lessons || []).map((lesson, index) => ({
+            ...lesson,
+            id: lesson.id || `${gradeDoc.id}-${index}`,
+            grade: gradeDoc.id,
+          }))
         );
-      });
-  
-      return () => unsubscribe(); 
+        setLessons(allLessons);
+        gradesLoaded = true;
+        finishInitialLoad();
+      },
+      () => {
+        setError("Lesson data could not be loaded. Please try again later.");
+        gradesLoaded = true;
+        finishInitialLoad();
+      }
+    );
 
+    return () => {
+      unsubscribeUsers();
+      unsubscribeGrades();
+    };
   }, []);
 
-  useEffect(()=>{
-   const unsubscribe = onSnapshot(collection(db, "grades"), (snapshot) => {
-    const gradesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    const allLessons = gradesData.flatMap((grade) => 
-      (grade.lessons || []).map(lesson => ({ ...lesson, grade: grade.id })) // include grade id for filtering
-    );
-    setLesssons(allLessons); // ✅ flatten and attach grade
-  });
+  const groups = useMemo(
+    () => [...new Set(users.map((user) => user.group).filter(Boolean))].sort(),
+    [users]
+  );
+  const parts = useMemo(
+    () =>
+      [
+        ...new Set(
+          users
+            .filter((user) => selectedGroup === "All" || user.group === selectedGroup)
+            .map((user) => user.part)
+            .filter(Boolean)
+        ),
+      ].sort(),
+    [users, selectedGroup]
+  );
+  const grades = useMemo(
+    () => [...new Set(users.map((user) => user.grade).filter(Boolean))].sort(),
+    [users]
+  );
+  const lessonGrades = useMemo(
+    () => [...new Set(lessons.map((lesson) => lesson.grade).filter(Boolean))].sort(),
+    [lessons]
+  );
+  const filteredUsers = useMemo(
+    () =>
+      users.filter(
+        (user) =>
+          (selectedGroup === "All" || user.group === selectedGroup) &&
+          (selectedPart === "All" || user.part === selectedPart) &&
+          (selectedUserGrade === "All" || user.grade === selectedUserGrade)
+      ),
+    [users, selectedGroup, selectedPart, selectedUserGrade]
+  );
+  const filteredLessons = useMemo(
+    () =>
+      lessons.filter(
+        (lesson) =>
+          selectedLessonGrade === "All" || lesson.grade === selectedLessonGrade
+      ),
+    [lessons, selectedLessonGrade]
+  );
 
-  return () => unsubscribe();
-
-  },[])
- const filterLessons = () => {
-  let filtered = lessons;
-
-  if (selectedGrade !== "All") {
-    filtered = lessons.filter(lesson => lesson.grade === selectedGrade);
-  }
-
-  setFilteredLessons(filtered);
-};
-
-  useEffect(() => { 
-    filterUsers();
-    filterLessons()
-  }, [selectedGroup, selectedLessons,lessons,grade, selectedGrade,selectedPart, users]);
-
-  const filterUsers = () => {
-    let filtered = users;
-
-    if (selectedGroup !== "All") {
-        filtered = filtered.filter(user => user.group === selectedGroup);
-      }
-  
-      // Extract available parts & grades **after** applying group filter
-      const availableParts = [...new Set(filtered.map(user => user.part))];
-      const availableGrades = [...new Set(filtered.map(user => user.grade))];
-  
-      // Apply part and grade filters only if they exist in the available options
-      if (selectedPart !== "All" && availableParts.includes(selectedPart)) {
-        filtered = filtered.filter(user => user.part === selectedPart);
-      }
-  
-      if (selectedGrade !== "All" && availableGrades.includes(selectedGrade)) {
-        filtered = filtered.filter(user => user.grade === selectedGrade);
-      }
-    setFilteredUsers(filtered);
-  };
-
- 
-
-
-  // Count users per grade
-  const gradeCounts = filteredUsers.reduce((acc, user) => {
-    acc[user.grade] = (acc[user.grade] || 0) + 1;
-    return acc;
+  const gradeCounts = filteredUsers.reduce((counts, user) => {
+    const grade = user.grade || "Unassigned";
+    counts[grade] = (counts[grade] || 0) + 1;
+    return counts;
+  }, {});
+  const partCounts = filteredUsers.reduce((counts, user) => {
+    const part = user.part || "Unassigned";
+    counts[part] = (counts[part] || 0) + 1;
+    return counts;
   }, {});
 
-//  Count users per group for pie chart
-  const groupCounts = filteredUsers.reduce((acc, user) => {
-    acc[user.part] = (acc[user.part] || 0) + 1;
-    return acc;
-  }, {});
-  const groups = [...new Set(users.map(user => user.group))];
-
-  // Get available parts & grades based on filtered group
-  const parts = [...new Set(users.filter(user => selectedGroup === "All" || user.group === selectedGroup).map(user => user.part))];
-  const grades = [...new Set(users.filter(user => selectedGroup === "All" || user.group === selectedGroup).map(user => user.grade))];
-  const pieChartData = {
-    labels: Object.keys(groupCounts),
-    datasets: [{ label: "Users per Group", data: Object.values(groupCounts), backgroundColor: ["#ff6384", "#36a2eb", "#ffce56"] }]
-  };
-  const chartData = {
-    labels: Object.keys(gradeCounts), // Grade names (e.g., "Grade 1", "Grade 2")
+  const barChartData = {
+    labels: Object.keys(gradeCounts),
     datasets: [
       {
-        label: "Number of Users",
-        data: Object.values(gradeCounts), // Count of users per grade
-        backgroundColor: "rgba(75, 192, 192, 0.6)",
-        borderColor: "rgba(75, 192, 192, 1)",
-        borderWidth: 1
-      }
-    ]
+        label: "Members",
+        data: Object.values(gradeCounts),
+        backgroundColor: "rgba(201, 162, 75, 0.65)",
+        borderColor: "#C9A24B",
+        borderWidth: 1,
+      },
+    ],
   };
-//   Export CSV
+  const pieChartData = {
+    labels: Object.keys(partCounts),
+    datasets: [
+      {
+        label: "Members",
+        data: Object.values(partCounts),
+        backgroundColor: ["#C9A24B", "#5A1E12", "#8B6F3C", "#D9C9A8", "#704B32"],
+        borderColor: theme === "light" ? "#FFFFFF" : "#150B07",
+        borderWidth: 2,
+      },
+    ],
+  };
+
   const exportCSV = () => {
-    const csvData = [["Name", "Group", "Part", "Grade"], ...filteredUsers.map(user => [user.name, user.group, user.part, user.grade])];
-    const csvContent = "data:text/csv;charset=utf-8," + csvData.map(e => e.join(",")).join("\n");
-    const blob = new Blob([decodeURIComponent(encodeURIComponent(csvContent))], { type: "text/csv;charset=utf-8;" });
-    saveAs(blob, "filtered_users.csv");
+    const escapeCell = (value) => `"${String(value ?? "").replaceAll('"', '""')}"`;
+    const rows = [
+      ["Name", "Email", "Group", "Part", "Grade", "Date of birth"],
+      ...filteredUsers.map((user) => [
+        user.name,
+        user.email,
+        user.group,
+        user.part,
+        user.grade,
+        user.age,
+      ]),
+    ];
+    const csv = `\uFEFF${rows.map((row) => row.map(escapeCell).join(",")).join("\r\n")}`;
+    saveAs(new Blob([csv], { type: "text/csv;charset=utf-8;" }), "choir-members.csv");
   };
+
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <h2 className="text-2xl font-bold mb-4">Admin Dashboard - User Grades</h2>
-
-      {/* Filters */}
-      <div className="flex gap-4 mb-4">
-        <div>
-          <label className="block font-semibold">Select Group:</label>
-          <select className="border p-2 rounded" onChange={(e) => setSelectedGroup(e.target.value)}>
-            <option value="All">All</option>
-            {[...new Set(users.map(user => user.group))].map(group => <option key={group} value={group}>{group}</option>)}
-          </select>
+    <section className="w-full min-w-0 space-y-5" aria-labelledby="admin-dashboard-title">
+      <header className="flex min-w-0 items-start gap-4 border border-[#C9A24B]/25 bg-[#150B07] p-4 sm:p-6">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center border border-[#C9A24B]/40 text-[#C9A24B]">
+          <FaUsers aria-hidden="true" />
+        </span>
+        <div className="min-w-0">
+          <p className="font-sans text-[10px] uppercase tracking-[0.22em] text-[#8B6F3C]">
+            Choir management
+          </p>
+          <h2 id="admin-dashboard-title" className="font-display mt-2 break-words text-2xl font-semibold sm:text-3xl">
+            Members &amp; learning overview
+          </h2>
+          <p className="mt-2 text-sm leading-relaxed text-[#B9A685]">
+            Filter member records, view grade lessons and export the current member list.
+          </p>
         </div>
-        <div>
-          <label className="block font-semibold">Select Part:</label>
-          <select className="border p-2 rounded" onChange={(e) => setSelectedPart(e.target.value)} >
-            <option value="All">All</option>
-            {parts.map(part => <option key={part} value={part}>{part}</option>)}
-          </select>
-        </div>
+      </header>
 
+      {error && (
+        <p className="break-words border border-red-900/60 bg-[#1B0E08] px-4 py-3 text-sm text-red-200" role="alert">
+          {error}
+        </p>
+      )}
+
+      <div className="min-w-0 border border-[#C9A24B]/25 bg-[#150B07] p-4 sm:p-6">
+        <div className="mb-4 flex items-center gap-2 text-[#C9A24B]">
+          <FaFilter aria-hidden="true" />
+          <h3 className="font-sans text-xs font-semibold uppercase tracking-[0.18em]">
+            Filters
+          </h3>
+        </div>
+        <div className="grid min-w-0 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <label className={labelClass}>
+            Member group
+            <select className={fieldClass} value={selectedGroup} onChange={(event) => {
+              setSelectedGroup(event.target.value);
+              setSelectedPart("All");
+            }}>
+              <option className="bg-[#150B07]" value="All">All groups</option>
+              {groups.map((group) => (
+                <option className="bg-[#150B07]" key={group} value={group}>{group}</option>
+              ))}
+            </select>
+          </label>
+          <label className={labelClass}>
+            Member part
+            <select className={fieldClass} value={selectedPart} onChange={(event) => setSelectedPart(event.target.value)}>
+              <option className="bg-[#150B07]" value="All">All parts</option>
+              {parts.map((part) => (
+                <option className="bg-[#150B07]" key={part} value={part}>{part}</option>
+              ))}
+            </select>
+          </label>
+          <label className={labelClass}>
+            Member grade
+            <select className={fieldClass} value={selectedUserGrade} onChange={(event) => setSelectedUserGrade(event.target.value)}>
+              <option className="bg-[#150B07]" value="All">All grades</option>
+              {grades.map((grade) => (
+                <option className="bg-[#150B07]" key={grade} value={grade}>{grade}</option>
+              ))}
+            </select>
+          </label>
+          <label className={labelClass}>
+            Lesson grade
+            <select className={fieldClass} value={selectedLessonGrade} onChange={(event) => setSelectedLessonGrade(event.target.value)}>
+              <option className="bg-[#150B07]" value="All">All grades</option>
+              {lessonGrades.map((grade) => (
+                <option className="bg-[#150B07]" key={grade} value={grade}>{grade}</option>
+              ))}
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <div className="grid min-w-0 gap-4 sm:grid-cols-2">
+        <article className="border border-[#C9A24B]/25 bg-[#150B07] p-4 sm:p-5">
+          <p className="font-sans text-[10px] uppercase tracking-[0.18em] text-[#8B6F3C]">Filtered members</p>
+          <p className="font-display mt-2 text-3xl font-semibold text-[#F5EBD8]" aria-live="polite">
+            {loading ? "…" : filteredUsers.length}
+          </p>
+        </article>
+        <article className="border border-[#C9A24B]/25 bg-[#150B07] p-4 sm:p-5">
+          <p className="font-sans text-[10px] uppercase tracking-[0.18em] text-[#8B6F3C]">Filtered lessons</p>
+          <p className="font-display mt-2 text-3xl font-semibold text-[#F5EBD8]" aria-live="polite">
+            {loading ? "…" : filteredLessons.length}
+          </p>
+        </article>
+      </div>
+
+      <div className="grid min-w-0 gap-4 lg:grid-cols-2">
+        <article className="min-w-0 border border-[#C9A24B]/25 bg-[#150B07] p-4 sm:p-5">
+          <h3 className="font-display mb-4 text-xl font-semibold">Members by grade</h3>
+          <div className="relative h-64 min-w-0">
+            <Bar data={barChartData} options={chartOptions} />
+          </div>
+        </article>
+        <article className="min-w-0 border border-[#C9A24B]/25 bg-[#150B07] p-4 sm:p-5">
+          <h3 className="font-display mb-4 text-xl font-semibold">Members by choir part</h3>
+          <div className="relative mx-auto h-64 min-w-0 max-w-sm">
+            <Pie data={pieChartData} options={{ ...chartOptions, scales: undefined }} />
+          </div>
+        </article>
+      </div>
+
+      <section className="min-w-0 border border-[#C9A24B]/25 bg-[#150B07] p-4 sm:p-5" aria-labelledby="members-table-heading">
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-          <label className="block font-semibold">Select Grade:</label>
-          <select className="border p-2 rounded" onChange={(e) => setSelectedPart(e.target.value)} >
-            <option value="All">All</option>
-            {grades.map(part => <option key={part} value={part}>{part}</option>)}
-          </select>
+            <h3 id="members-table-heading" className="font-display text-xl font-semibold">Choir members</h3>
+            <p className="mt-1 text-xs text-[#B9A685]">Showing {filteredUsers.length} member{filteredUsers.length === 1 ? "" : "s"}</p>
+          </div>
+          <button
+            type="button"
+            onClick={exportCSV}
+            disabled={filteredUsers.length === 0}
+            className="inline-flex min-h-11 items-center justify-center gap-2 border border-[#C9A24B]/50 px-4 py-2 font-sans text-xs uppercase tracking-[0.12em] text-[#C9A24B] transition-colors hover:bg-[#C9A24B] hover:text-[#150B07] disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <FaDownload aria-hidden="true" />
+            Export CSV
+          </button>
         </div>
-        <div>
-          <label className="block font-semibold">Select Lessons By Grade:</label>
-          <select className="border p-2 rounded" onChange={(e) => setSelectedGrade(e.target.value)} >
-            <option value="All">All</option>
-             {[...new Set(lessons.map(lesson => lesson.grade))].map((grade) => (
-      <option key={grade} value={grade}>{grade}</option>
-    ))}
-          </select>
-        </div>
-
-        
-      </div>
-      {/* Export Button */}
-      <button onClick={exportCSV} className="bg-blue-500 text-white px-4 py-2 rounded mb-4">Export CSV</button>
-
-      {/* Total Users in Filtered Group */}
-      <div className="bg-white p-4 shadow rounded mb-4">
-        <h3 className="text-lg font-semibold">Total Users in Selected Filter:</h3>
-        <p><strong>{filteredUsers.length} Users</strong></p>
-      </div>
-
-            <div className="bg-white p-4 shadow rounded mb-4">
-        <h3 className="text-lg font-semibold">Total Lessons in Selected Filter:</h3>
-        <p><strong>{filteredLessons.length} Users</strong></p>
-      </div>
-    
- {/*  Chart */}
- <div className="flex gap-4">
-        <div className="w-1/2 bg-white p-4 shadow rounded">
-          <h3 className="text-lg font-semibold">Grade Distribution</h3>
-          <Bar data={chartData} />
-        </div>
-        <div className="w-1/2 bg-white p-4 shadow rounded">
-          <h3 className="text-lg font-semibold">User Distribution by Group</h3>
-          <Pie data={pieChartData} />
-        </div>
-      </div>
-
-     
-      {/* User Table */}
-      <div className="bg-white p-4 shadow rounded mb-4">
-        <h3 className="text-lg font-semibold mb-2">Users & Grades</h3>
-        <table className="w-full border-collapse border">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="border p-2">Name</th>
-              <th className="border p-2">Group</th>
-              <th className="border p-2">Part</th>
-              <th className="border p-2">Grade</th>
-              <th className="border p-2">D-0-B</th>
-              <th className="border p-2">Image</th>
-            </tr>
-          </thead>
-          <tbody key={users.part}>
-            {filteredUsers.map(user => (
-              <tr key={user.id} className="border">
-                <td className="border p-2">
-                    <img className='rounded-full w-8 h-8' src={user.imageUrl || dummy } alt="user" />
-                </td>
-                <td className="border p-2">{user.name}</td>
-                <td className="border p-2">{user.group}</td>
-                <td className="border p-2">{user.part}</td>
-                <td className="border p-2">{user.grade}</td>
-                <td className="border p-2">{user.age}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-     
-
-      {filteredLessons.length > 0 && (
-        
-        <div className="bg-white p-4 shadow rounded mb-4">
-          <h3 className="text-lg font-semibold mb-2">Filtered Lessons</h3>
-          <table className="w-full border-collapse border">
+        <div className="max-w-full overflow-x-auto overscroll-x-contain">
+          <table className="w-full min-w-[680px] border-collapse text-left text-sm">
             <thead>
-              <tr className="bg-gray-200">
-                <th className="border p-2">Title</th>
-                <th className="border p-2">Content</th>
-                <th className="border p-2">Grade</th>
+              <tr className="border-y border-[#C9A24B]/20 font-sans text-[10px] uppercase tracking-[0.12em] text-[#C9A24B]">
+                <th scope="col" className="px-3 py-3">Member</th>
+                <th scope="col" className="px-3 py-3">Group</th>
+                <th scope="col" className="px-3 py-3">Part</th>
+                <th scope="col" className="px-3 py-3">Grade</th>
+                <th scope="col" className="px-3 py-3">Date of birth</th>
               </tr>
             </thead>
             <tbody>
-              {filteredLessons.map(lesson => (
-                <tr key={lesson.id} className="border">
-                  <td className="border text-[12px] p-2">{lesson.title}</td>
-                  <td className="border text-[12px] p-2">{lesson.content}</td>
-                  <td className="border p-1 text-[11px]">{lesson.grade}</td>
+              {filteredUsers.map((user) => (
+                <tr key={user.id} className="border-b border-[#C9A24B]/10 text-[#D9C9A8]">
+                  <td className="px-3 py-3">
+                    <div className="flex items-center gap-3">
+                      <img className="h-9 w-9 shrink-0 rounded-full border border-[#C9A24B]/30 object-cover" src={user.imageUrl || dummy} alt="" loading="lazy" />
+                      <div className="min-w-0">
+                        <p className="break-words font-medium text-[#F5EBD8]">{user.name || "Unnamed member"}</p>
+                        <p className="break-all text-xs text-[#8B6F3C]">{user.email}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-3 py-3">{user.group || "—"}</td>
+                  <td className="px-3 py-3">{user.part || "—"}</td>
+                  <td className="px-3 py-3">{user.grade || "—"}</td>
+                  <td className="px-3 py-3">{user.age || "—"}</td>
                 </tr>
               ))}
+              {!loading && filteredUsers.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="px-3 py-8 text-center text-sm text-[#B9A685]">
+                    No members match the selected filters.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
-      )}
+      </section>
 
-     
-    </div>
+      <section className="min-w-0 border border-[#C9A24B]/25 bg-[#150B07] p-4 sm:p-5" aria-labelledby="lessons-table-heading">
+        <h3 id="lessons-table-heading" className="font-display mb-4 text-xl font-semibold">Grade lessons</h3>
+        <div className="max-w-full overflow-x-auto overscroll-x-contain">
+          <table className="w-full min-w-[560px] border-collapse text-left text-sm">
+            <thead>
+              <tr className="border-y border-[#C9A24B]/20 font-sans text-[10px] uppercase tracking-[0.12em] text-[#C9A24B]">
+                <th scope="col" className="px-3 py-3">Title</th>
+                <th scope="col" className="px-3 py-3">Content</th>
+                <th scope="col" className="px-3 py-3">Grade</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredLessons.map((lesson) => (
+                <tr key={lesson.id} className="border-b border-[#C9A24B]/10 text-[#D9C9A8]">
+                  <td className="max-w-48 break-words px-3 py-3 font-medium text-[#F5EBD8]">{lesson.title}</td>
+                  <td className="max-w-sm whitespace-pre-wrap break-words px-3 py-3">{lesson.content}</td>
+                  <td className="px-3 py-3">{lesson.grade}</td>
+                </tr>
+              ))}
+              {!loading && filteredLessons.length === 0 && (
+                <tr>
+                  <td colSpan={3} className="px-3 py-8 text-center text-sm text-[#B9A685]">
+                    No lessons match the selected grade.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </section>
   );
 };
 

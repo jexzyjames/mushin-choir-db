@@ -94,9 +94,9 @@ const Profile = ({ title = "Profile" }) => {
 
       await dispatch(
         updateUserDetails({
-          id: user.uid,
+          id,
           userData: {
-            number: form.phoneNum.trim(),
+            number: String(form.phoneNum ?? "").trim(),
             part: form.part,
             group: form.group,
             grade: form.grade,

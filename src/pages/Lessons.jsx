@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FaBookOpen } from "react-icons/fa6";
 import { getgradesLessons } from "../redux/slices/gradeContentSlice";
+import { sanitizeRichText } from "../utils/sanitizeRichText";
 
 const Lessons = ({ title = "Lessons" }) => {
   const dispatch = useDispatch();
@@ -87,9 +88,10 @@ const Lessons = ({ title = "Lessons" }) => {
             <h3 className="font-display mt-3 text-2xl font-semibold text-[#F5EBD8]">
               {lesson.title}
             </h3>
-            <p className="mt-5 whitespace-pre-wrap break-words text-sm leading-7 text-[#D9C9A8]">
-              {lesson.content}
-            </p>
+            <div
+              className="rich-content mt-5 break-words text-sm leading-7 text-[#D9C9A8]"
+              dangerouslySetInnerHTML={{ __html: sanitizeRichText(lesson.content) }}
+            />
           </article>
           {lessons.length > 1 && (
             <div className="mt-4 flex items-center justify-between gap-3">
